@@ -1,0 +1,35 @@
+---
+title: "Loading script"
+format: html
+editor: visual
+---
+
+### Importing libraries
+
+```{r}
+library("tidyverse")
+```
+
+### Setting the necessary filenames and folder paths
+
+```{r}
+
+raw_data_path = "~/projects/Group25_Project/_raw"
+
+data_path = "~/projects/Group25_Project/data"
+outfile_name = "01_dat_load.tsv"
+
+```
+
+### Combining all excel files into one tsv file
+
+Some data included information in the name that could not be found in the file. Eg: not KIR blocked, KIR blocked (\_KIR\_) and KIR double positive (\_KIR_DP)\
+Therefore this loading step does not exclusively clean, it also augments the data to some extent.
+
+```{r}
+
+filenames <- list.files("temp", pattern="*.csv", full.names=TRUE)
+ldf <- lapply(filenames, read.csv)
+
+
+```
