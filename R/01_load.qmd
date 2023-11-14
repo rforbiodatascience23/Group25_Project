@@ -40,16 +40,25 @@ file_names <- list.files(path = raw_data_path,
                     pattern = "\\.xlsx",
                     full.names = TRUE)
 
-coltypes <- c("text", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric","text", "text", "text", "text", "text","text","text", "numeric","numeric", "text", "text")
+
 ```
 
 ```{r}
 #| message: false
+
+
+colnames <- c("barcode", "sample", "count.1", "input.1", "input.2", "input.3", "log_fold_change", "p", "-log10(p)", "masked_p (p = 1 if logFC < 0)", "-log10(masked_p)", "count.normalised (edgeR)", "input.normalised (edgeR)", "Number", "HLA", "Protein", "Peptide")
+
+coltypes <- c("text", "text", "numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric", "text", "text", "text")
+
 data_ <- map(file_names, 
              ~read_excel(.x)) |>
-         map2(file_names, 
-              ~mutate(.x, filename = .y)) |>         # add column containing filename
-         map(~filter(.x, row_number() <= n()-1))     # remove last row
+  map(~select(.x,
+              all_of(colnames))) |>
+  map2(file_names,
+       ~mutate(.x, filename = .y)) |>         # add column containing filename
+  map(~filter(.x, row_number() <= n()-1)) |>     # remove last row
+  map(~mutate(.x, "-log10(masked_p)" = as.double("-log10(masked_p)")))
  
 ```
 
