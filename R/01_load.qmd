@@ -4,17 +4,25 @@ format: html
 editor: visual
 ---
 
-### Importing libraries
+### Clear workspace
 
 ```{r}
+rm(list = ls())
+```
+
+### Import Libraries
+
+```{r}
+#| message: false
 library("tidyverse")
+library("readxl")
 ```
 
 ### Setting the necessary filenames and folder paths
 
 ```{r}
 
-raw_data_path = "~/projects/Group25_Project/_raw"
+raw_data_path = "~/projects/Group25_Project/_raw/"
 
 data_path = "~/projects/Group25_Project/data"
 outfile_name = "01_dat_load.tsv"
@@ -27,9 +35,31 @@ Some data included information in the name that could not be found in the file. 
 Therefore this loading step does not exclusively clean, it also augments the data to some extent.
 
 ```{r}
+# Extract and read files
+file_names <- list.files(path = raw_data_path,
+                    pattern = "\\.xlsx",
+                    full.names = TRUE)
 
-filenames <- list.files("temp", pattern="*.csv", full.names=TRUE)
-ldf <- lapply(filenames, read.csv)
+coltypes <- c("text", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric","text", "text", "text", "text", "text","text","text", "numeric","numeric", "text", "text")
+```
 
+```{r}
+#| message: false
+data_ <- map(file_names, 
+             ~read_excel(.x)) |>
+         map2(file_names, 
+              ~mutate(.x, filename = .y)) |>         # add column containing filename
+         map(~filter(.x, row_number() <= n()-1))     # remove last row
+ 
+```
 
+```{r}
+
+combined_data <- bind_rows(data_, .id = 'filename')
+
+```
+
+```{r}
+library(stringr)
+str_c('text', sep="",)
 ```
