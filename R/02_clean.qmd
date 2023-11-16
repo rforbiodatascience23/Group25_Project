@@ -1,0 +1,13 @@
+---
+title: "Cleaning Data"
+format: html
+editor: visual
+---
+
+### Clear workspace
+
+```{r}
+rm(list = ls())
+```
+
+### 

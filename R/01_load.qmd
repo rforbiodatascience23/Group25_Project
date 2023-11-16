@@ -48,10 +48,7 @@ Therefore this loading step does not exclusively clean, it also augments the dat
 #| message: false
 #| warning: false
 
-
 colnames <- c("barcode", "sample", "count.1", "input.1", "input.2", "input.3", "log_fold_change", "p", "-log10(p)", "masked_p (p = 1 if logFC < 0)", "-log10(masked_p)", "count.normalised (edgeR)", "input.normalised (edgeR)", "Number", "HLA", "Protein", "Peptide")
-
-# coltypes <- c("text", "text", "numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric", "text", "text", "text")
 
 data_ <- map(file_paths, 
              ~read_excel(.x)) |>          # reading all files into tibbles
