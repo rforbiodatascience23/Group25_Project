@@ -22,53 +22,56 @@ library("readxl")
 
 ```{r}
 
-raw_data_path = "~/projects/Group25_Project/_raw/"
+raw_data_path <- "~/projects/Group25_Project/_raw"
+data_path <- "~/projects/Group25_Project/data"
 
-data_path = "~/projects/Group25_Project/data"
-outfile_name = "01_dat_load.tsv"
+file_paths <- list.files(path = raw_data_path,
+                    pattern = ".xlsx",
+                    full.names = TRUE)
+
+file_names <- list.files(path = raw_data_path,
+                    pattern = ".xlsx",
+                    full.names = FALSE)
+
+
+outfile_name <- "01_dat_load.csv"
+outfile_path <- file.path(data_path, outfile_name)
 
 ```
 
 ### Combining all excel files into one tsv file
 
-Some data included information in the name that could not be found in the file. Eg: not KIR blocked, KIR blocked (\_KIR\_) and KIR double positive (\_KIR_DP)\
+Some data included information in the name that could not be found in the file - Eg: not KIR blocked, KIR blocked (\_KIR\_) and KIR double positive (\_KIR_DP)\
 Therefore this loading step does not exclusively clean, it also augments the data to some extent.
 
 ```{r}
-# Extract and read files
-file_names <- list.files(path = raw_data_path,
-                    pattern = "\\.xlsx",
-                    full.names = TRUE)
-
-
-```
-
-```{r}
 #| message: false
+#| warning: false
 
 
 colnames <- c("barcode", "sample", "count.1", "input.1", "input.2", "input.3", "log_fold_change", "p", "-log10(p)", "masked_p (p = 1 if logFC < 0)", "-log10(masked_p)", "count.normalised (edgeR)", "input.normalised (edgeR)", "Number", "HLA", "Protein", "Peptide")
 
-coltypes <- c("text", "text", "numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric", "text", "text", "text")
+# coltypes <- c("text", "text", "numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric", "text", "text", "text")
 
-data_ <- map(file_names, 
-             ~read_excel(.x)) |>
+data_ <- map(file_paths, 
+             ~read_excel(.x)) |>          # reading all files into tibbles
   map(~select(.x,
-              all_of(colnames))) |>
+              all_of(colnames))) |>       # giving all columns names
+  map(~filter(.x,
+              row_number() <= n()-1)) |>  # remove last row as it contained a formula
   map2(file_names,
-       ~mutate(.x, filename = .y)) |>         # add column containing filename
-  map(~filter(.x, row_number() <= n()-1)) |>     # remove last row
-  map(~mutate(.x, "-log10(masked_p)" = as.double("-log10(masked_p)")))
- 
-```
-
-```{r}
-
-combined_data <- bind_rows(data_, .id = 'filename')
+       ~ mutate(.x,
+                filename = .y)) |>        # adding the filenames
+  map(~mutate(.x,                         # fixing a type issue
+              "-log10(masked_p)" = as.numeric(.x[["-log10(masked_p)"]]))) |>
+  bind_rows()                             # merging all tibbles into one
 
 ```
 
+### Export loaded data file
+
 ```{r}
-library(stringr)
-str_c('text', sep="",)
+
+write_csv(data_, outfile_path)
+
 ```
