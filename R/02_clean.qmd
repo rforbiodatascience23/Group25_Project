@@ -10,4 +10,56 @@ editor: visual
 rm(list = ls())
 ```
 
-### 
+### Import Packages
+
+```{r}
+#| message: false
+library("tidyverse")
+library("stringr")
+```
+
+### Load Data File
+
+```{r}
+#| message: false
+data_file <- read_csv(file = '~/projects/Group25_Project/data/01_dat_load.csv')
+```
+
+### Filter Significant Subset
+
+```{r}
+sign_data <- data_file |>
+             filter(p < 0.001 & log_fold_change > 2)|> # what about sign. negative change?
+             arrange(desc(log_fold_change))
+             #mutate_if(is.numeric, round, digits=4)
+```
+
+```{r}
+sign_data <- sign_data |>
+             mutate( cohort_type = 
+                  case_when(
+                      str_detect(sample, "KIR_DP") ~ "KIR_DP",
+                      str_detect(sample, "KIR") ~ "KIR",
+                      .default = "MHC"
+                    ),
+            .after = sample
+               ) |>
+            separate_wider_delim(
+                    "sample",
+                    delim = "_",
+                    names = c("SampleID"),
+                    too_many = "drop"
+                )
+```
+
+**Factor**
+
+```{r}
+na <- sign_data |>
+       #mutate(cohort_type = factor(levels =  c("KIR_DP", "KIR", "MHC")))
+
+```
+
+Descriptive Statistics set
+
+(For each sub set, calculate the average and standard deviation of the log fold)
