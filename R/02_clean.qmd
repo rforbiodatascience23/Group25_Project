@@ -24,6 +24,8 @@ library(dplyr)
 ```{r}
 #| message: false
 data_file <- read_csv(file = '~/projects/Group25_Project/data/01_dat_load.csv')
+data_path <- "~/projects/Group25_Project/data"
+outfile_path <- file.path(data_path, '02_dat_clean.csv')
 ```
 
 ### Filter Significant Subset
@@ -66,4 +68,10 @@ BS_data <- sign_data |>
 
 BC_data <- sign_data |>
            filter(grepl('BC', SampleID))
+```
+
+### Export data
+
+```{r}
+write_csv(sign_data, outfile_path)
 ```
