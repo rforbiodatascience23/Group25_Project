@@ -32,17 +32,18 @@ data_file <- read_csv(file = '~/projects/Group25_Project/data/01_dat_load.csv')
 sign_data <- data_file |>
              filter(p < 0.001 & log_fold_change > 2)|> # what about sign. negative change?
              arrange(desc(log_fold_change))
-             #mutate_if(is.numeric, round, digits=4) # consider rounding
+             mutate_if(is.numeric, round, digits=4) # consider if we should round (p-value)
 ```
 
 ```{r}
 sign_data <- sign_data |>
-             mutate(cohort_type = 
-                    case_when(
-                        str_detect(sample, "KIR_DP") ~ "KIR_DP",
-                        str_detect(sample, "KIR") ~ "KIR",
-                        .default = "MHC"
-                    ),  .after = sample, 
+             mutate(cohort_type = case_when(
+                                  str_detect(sample, "KIR_DP") ~ "KIR_DP",
+                                  str_detect(sample, "KIR") ~ "KIR",
+                                  .default = "MHC"),  
+                    after = sample,
+                    cohort_type = factor(cohort_type,
+                                         levels=c("KIR_DP", "KIR", "MHC"))
                ) |>
             separate_wider_delim(
                     "sample",
@@ -65,18 +66,4 @@ BS_data <- sign_data |>
 
 BC_data <- sign_data |>
            filter(grepl('BC', SampleID))
-```
-
-**Factor**
-
--\> Maybe we can add the factor-type when loading the data?
-
-```{r}
-na <- sign_data |>
-      factor(cohort_type, levels =  c("KIR_DP", "KIR", "MHC"))
-
-```
-
-```{r}
-str(sign_data)
 ```
