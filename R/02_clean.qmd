@@ -33,7 +33,7 @@ outfile_path <- file.path(data_path, '02_dat_clean.csv')
 ```{r}
 sign_data <- data_file |>
              filter(p < 0.001 & log_fold_change > 2)|> # what about sign. negative change?
-             arrange(desc(log_fold_change))
+             arrange(desc(log_fold_change)) |>
              mutate_if(is.numeric, round, digits=4) # consider if we should round (p-value)
 ```
 
