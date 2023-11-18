@@ -3,3 +3,17 @@ title: "03_describe"
 format: html
 editor: visual
 ---
+
+### Load Packages
+
+```{r}
+library(tidyverse)
+
+```
+
+### Load Data
+
+```{r}
+#| message: false
+clean_data <- read_csv("../data/02_dat_clean.csv")
+```
