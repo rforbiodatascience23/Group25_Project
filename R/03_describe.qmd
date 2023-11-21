@@ -1,0 +1,66 @@
+---
+title: "Loading script"
+format: html
+editor: visual
+---
+
+#### Clean Work Environment
+
+```{r}
+rm(list = ls())
+```
+
+#### Load Packages
+
+```{r}
+#| message: false
+library(tidyverse)
+```
+
+#### Load Data
+
+```{r}
+#| message: false
+data_load <- read.csv(file = '~/projects/Group25_Project/data/02_dat_clean.csv')
+```
+
+## Number of Responses
+
+```{r}
+responders <- data_load |>
+            mutate(cohort = case_when(
+              grepl("AP", sample_ID) ~ "AP",
+              grepl("BS", sample_ID) ~ "BS",
+              grepl("BC", sample_ID) ~ "BC",
+              TRUE ~ NA
+            )) |>
+            group_by(sample_ID, cohort)|>
+            summarise(count = n(),
+                      KIR_blocking = first(KIR_blocking),.groups = "drop")
+```
+
+```{r}
+data_counts <- data_load |>
+              mutate(cohort = case_when(
+                grepl("AP", sample_ID) ~ "AP",
+                grepl("BS", sample_ID) ~ "BS",
+                grepl("BC", sample_ID) ~ "BC",
+                TRUE ~ NA
+              )) |>
+               count(cohort, sample_ID) |>
+               left_join(data_load |> 
+                         distinct(sample_ID, 
+                                  .keep_all = TRUE) |>
+               select(sample_ID, KIR_blocking), 
+                      by = "sample_ID")
+
+print(data_counts)
+```
+
+## BoxPlots
+
+```{r}
+
+ggplot(data_counts, aes(x=cohort, y=n, fill=KIR_blocking)) + 
+    geom_boxplot()
+```
