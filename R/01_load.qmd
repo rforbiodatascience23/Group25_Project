@@ -22,7 +22,7 @@ library("readxl")
 
 ```{r}
 
-raw_data_path <- "~/projects/Group25_Project/_raw"
+raw_data_path <- "~/projects/Group25_Project/_raw/barracoda"
 data_path <- "~/projects/Group25_Project/data"
 
 file_paths <- list.files(path = raw_data_path,
