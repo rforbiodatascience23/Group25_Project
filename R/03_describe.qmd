@@ -21,32 +21,17 @@ library(tidyverse)
 
 ```{r}
 #| message: false
-data_load <- read.csv(file = '~/projects/Group25_Project/data/02_dat_clean.csv')
+data_load <- load(file = '~/projects/Group25_Project/data/02_dat_clean.RDS')
+```
+
+```{r}
+view(data_load)
 ```
 
 ## Number of Responses
 
 ```{r}
-responders <- data_load |>
-            mutate(cohort = case_when(
-              grepl("AP", sample_ID) ~ "AP",
-              grepl("BS", sample_ID) ~ "BS",
-              grepl("BC", sample_ID) ~ "BC",
-              TRUE ~ NA
-            )) |>
-            group_by(sample_ID, cohort)|>
-            summarise(count = n(),
-                      KIR_blocking = first(KIR_blocking),.groups = "drop")
-```
-
-```{r}
 data_counts <- data_load |>
-              mutate(cohort = case_when(
-                grepl("AP", sample_ID) ~ "AP",
-                grepl("BS", sample_ID) ~ "BS",
-                grepl("BC", sample_ID) ~ "BC",
-                TRUE ~ NA
-              )) |>
                count(cohort, sample_ID) |>
                left_join(data_load |> 
                          distinct(sample_ID, 
