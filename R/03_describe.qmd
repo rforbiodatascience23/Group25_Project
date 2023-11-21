@@ -4,16 +4,64 @@ format: html
 editor: visual
 ---
 
-### Load Packages
+#### Clean Work Environment
 
 ```{r}
-library(tidyverse)
-
+rm(list = ls())
 ```
 
-### Load Data
+#### Load Packages
 
 ```{r}
 #| message: false
-clean_data <- read_csv("../data/02_dat_clean.csv")
+library(tidyverse)
+```
+
+#### Load Data
+
+```{r}
+#| message: false
+data_b <- read_rds(file = '~/projects/Group25_Project/data/02_dat_clean_barracoda.RDS')
+```
+
+## Number of Responses
+
+```{r}
+data_counts <- data_b |>
+               count(cohort, sample_ID) |>
+               left_join(data_b |> 
+                         distinct(sample_ID, 
+                                  .keep_all = TRUE) |>
+               select(sample_ID, KIR_blocking), 
+                      by = "sample_ID")
+```
+
+```{r}
+text_size <- 14
+dot_size <- 0.1
+dot_color <- "#696969"
+
+boxplot_width <- 0.6
+```
+
+## BoxPlots
+
+```{r}
+
+ggplot(data_counts, 
+       aes(x = cohort, 
+           y = n, 
+           fill = KIR_blocking)) + 
+      geom_boxplot(width = boxplot_width,
+                   outlier.colour = "red")+
+      geom_jitter(width = dot_size)+
+      theme_light(base_size = text_size)+
+      theme(legend.position = 'bottom')+
+    	labs(
+    		x='Patient Cohort',
+    		y='Count (n)',
+    		title = 'Write a clever observation here',
+    		subtitle ='2023',
+    		caption = 'data from xx'
+    )
 ```
