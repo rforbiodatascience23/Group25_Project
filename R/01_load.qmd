@@ -7,8 +7,8 @@ editor: visual
 ### Clear workspace
 
 ```{r}
-rm(list = ls())
 
+rm(list = ls())
 ```
 
 ### Import Libraries
@@ -37,6 +37,10 @@ file_paths_barra <- list.files(path = raw_data_path_barra,
                     pattern = ".xlsx",
                     full.names = TRUE)
 
+file_names_barra <- list.files(path = raw_data_path_barra,
+                         pattern = "\\.xlsx",
+                         full.names = FALSE)
+
 file_paths_flow <- list.files(path = raw_data_path_flow,
                     pattern = ".xls",
                     full.names = TRUE)
@@ -60,15 +64,18 @@ Therefore this loading step does not exclusively clean, it also augments the dat
 
 colnames <- c("barcode", "sample", "count.1", "input.1", "input.2", "input.3", "log_fold_change", "p", "-log10(p)", "masked_p (p = 1 if logFC < 0)", "-log10(masked_p)", "count.normalised (edgeR)", "input.normalised (edgeR)", "Number", "HLA", "Protein", "Peptide")
 
-data_ <- map(file_paths_barra, 
-             ~read_excel(.x)) |>          # reading all files into tibbles
-        map(~select(.x,
-                    all_of(colnames))) |>       # giving all columns names
-        map(~filter(.x,
-                    row_number() <= n()-1)) |>  # remove last row as it contained a formula
-        map(~mutate(.x,                         # fixing a type issue
-                    "-log10(masked_p)" = as.numeric(.x[["-log10(masked_p)"]]))) |>
-        bind_rows()                             # merging all tibbles into one
+data_ <- map(file_paths_barra,
+             ~read_excel(.x)) |>
+  map(~select(.x,
+              all_of(colnames))) |>
+  map2(file_names_barra,
+       ~mutate(.x,
+               filename = .y)) |>
+  map(~filter(.x,
+              row_number() <= n()-1)) |>  # remove last row as it contained a formula
+  map(~mutate(.x,                         # fixing a type issue
+              "-log10(masked_p)" = as.numeric(.x[["-log10(masked_p)"]]))) |>
+  bind_rows()                             # merging all tibbles into one
 
 ```
 
@@ -78,6 +85,8 @@ data_ <- map(file_paths_barra,
 #| message: false
 #| warning: false
 
+#### DIVIDE BY 100 when removing %
+
 data_flow <- map(file_paths_flow, 
              ~read_excel(.x, col_types = 'text')) |>          # reading all files into tibbles
         map(~rename(.x,
@@ -86,7 +95,7 @@ data_flow <- map(file_paths_flow,
                     row_number() <= n()-2)) |>
         map(~mutate(.x, 
                     across(-experiment,
-                           ~as.numeric(str_replace(str_remove(.x, " %"), ",", "."))))) |> 
+                           ~as.numeric(str_replace(str_remove(.x, " %"), ",", "."))/100))) |> 
         bind_rows()
 ```
 

@@ -4,36 +4,42 @@ format: html
 editor: visual
 ---
 
-### Clear workspace
+## Prepping
 
-```{r}
-rm(list = ls())
-```
-
-### Import Packages
+Clearing the environment, loading the libraries and saving the path to the data folder.
 
 ```{r}
 #| message: false
+rm(list = ls())
+
 library(tidyverse)
 library(stringr)
 library(dplyr)
+
+data_path <- "~/projects/Group25_Project/data"
 ```
 
-### Load Data File
+## Barracoda
+
+### Loading the data
 
 ```{r}
 #| message: false
-data_load <- read_csv(file = '~/projects/Group25_Project/data/01_dat_load.csv')
-data_path <- "~/projects/Group25_Project/data"
-outfile_path <- file.path(data_path, '02_dat_clean.csv')
+
+data_load_b_path <- file.path(data_path, "01_dat_load_barracoda.csv")
+
+outfile_b_path <- file.path(data_path, '02_dat_clean_barracoda.csv')
+
+data_load_b <- read_csv(file = data_load_b_path)
+
 ```
 
 ### Removing irrelevant columns
 
 ```{r}
-cols_to_keep <-  c("barcode", "sample", "count.1", "log_fold_change", "p", "HLA", "Protein", "Peptide")
+cols_to_keep <-  c("barcode", "sample", "count.1", "log_fold_change", "p", "HLA", "Protein", "Peptide", "filename")
   
-data_clean <- data_load|>
+data_clean_b <- data_load_b|>
   select(all_of(cols_to_keep))
 ```
 
@@ -42,26 +48,15 @@ data_clean <- data_load|>
 This drastically decreases the data load, from 35000+ observations to \~1000.
 
 ```{r}
-data_clean <- data_clean |>
+data_clean_b <- data_clean_b |>
   filter(p < 0.001 & log_fold_change > 2)|>
   arrange(desc(log_fold_change))
-```
-
-### Adding cohort variable
-
-```{r}
-data_clean <- data_clean|>
-  mutate(cohort = case_when(
-    grepl("AP", sample_ID) ~ "AP",
-    grepl("BS", sample_ID) ~ "BS",
-    grepl("BC", sample_ID) ~ "BC",
-    TRUE ~ NA ))
 ```
 
 ### Extract information from sample column
 
 ```{r}
-data_clean <- data_clean |>
+data_clean_b <- data_clean_b |>
   mutate(KIR_blocking = factor(case_when(str_detect(sample, "KIR") ~ "1",
                                          TRUE ~ "0"),
                                levels = c("1", "0")),
@@ -72,14 +67,23 @@ data_clean <- data_clean |>
   separate_wider_delim("sample",
                        delim = "_",
                        names = c("sample_ID"),
-                       too_many = "drop")
+                       too_many = "drop") |>
+  mutate(cohort =
+           factor(
+             case_when(
+               grepl("AP", sample_ID) ~ "AP",
+               grepl("BS", sample_ID) ~ "BS",
+               grepl("BC", sample_ID) ~ "BC",
+               TRUE ~ NA ),
+             levels = c("AP", "BS", "BC")),
+         .after = "sample_ID")
 
 ```
 
 ### Extract information from protein column
 
 ```{r}
-data_clean <- data_clean |>
+data_clean_b <- data_clean_b |>
   mutate(Protein =
            factor(
              case_when(
@@ -101,7 +105,7 @@ data_clean <- data_clean |>
 ### Renaming all column names for consistency
 
 ```{r}
-data_clean <- data_clean |>
+data_clean_b <- data_clean_b |>
   rename(protein = Protein,
          count = "count.1",
          peptide = Peptide
@@ -111,5 +115,19 @@ data_clean <- data_clean |>
 ### Export data
 
 ```{r}
-write_csv(data_clean, outfile_path)
+write_csv(data_clean_b, outfile_b_path)
+```
+
+## Flowjo
+
+### Loading the data
+
+```{r}
+#| message: false
+
+data_load_f_path <- file.path(data_path, "01_dat_load_flowjo.csv")
+
+data_load_f <- read_csv(file = data_load_f_path)
+
+outfile_f_path <- file.path(data_path, '02_dat_clean_flowjo.csv')
 ```
