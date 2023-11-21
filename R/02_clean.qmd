@@ -26,11 +26,11 @@ data_path <- "~/projects/Group25_Project/data"
 ```{r}
 #| message: false
 
-data_load_b_path <- file.path(data_path, "01_dat_load_barracoda.csv")
+data_load_b_path <- file.path(data_path, "01_dat_load_barracoda.RDS")
 
-outfile_b_path <- file.path(data_path, '02_dat_clean_barracoda.csv')
+outfile_b_path <- file.path(data_path, '02_dat_clean_barracoda.RDS')
 
-data_load_b <- read_csv(file = data_load_b_path)
+data_load_b <- read_rds(file = data_load_b_path)
 
 ```
 
@@ -102,7 +102,7 @@ data_clean_b <- data_clean_b |>
                         "ORF7", "Envelope", "ORF10", "ORF8", "Unknown" )))
 ```
 
-### Renaming all column names for consistency
+### Renaming some columns for consistency
 
 ```{r}
 data_clean_b <- data_clean_b |>
@@ -115,7 +115,7 @@ data_clean_b <- data_clean_b |>
 ### Export data
 
 ```{r}
-write_csv(data_clean_b, outfile_b_path)
+saveRDS(data_clean_b, file = outfile_b_path)
 ```
 
 ## Flowjo
@@ -125,9 +125,55 @@ write_csv(data_clean_b, outfile_b_path)
 ```{r}
 #| message: false
 
-data_load_f_path <- file.path(data_path, "01_dat_load_flowjo.csv")
+data_load_f_path <- file.path(data_path, "01_dat_load_flowjo.RDS")
 
-data_load_f <- read_csv(file = data_load_f_path)
+data_load_f <- read_rds(file = data_load_f_path)
 
-outfile_f_path <- file.path(data_path, '02_dat_clean_flowjo.csv')
+outfile_f_path <- file.path(data_path, '02_dat_clean_flowjo.RDS')
+```
+
+### Removing irrelevant columns
+
+```{r}
+cols_to_keep <-  c("experiment", "Lymphocytes/Single Cells/Live cells/CD3/CD8/APC-multimer | Freq. of Parent", "Lymphocytes/Single Cells/Live cells/CD3/CD8/DP | Freq. of Parent", "Lymphocytes/Single Cells/Live cells/CD3/CD8/PE-multimer | Freq. of Parent")
+
+data_clean_f <- data_load_f|>
+  select(all_of(cols_to_keep))
+```
+
+### Extract information from experiment column
+
+```{r}
+
+data_clean_f <- data_clean_f |>
+  mutate(KIR_blocking =
+           factor(
+             case_when(
+               str_detect(experiment, "KIR") ~ "1",
+               TRUE ~ "0"),
+             levels = c("1", "0")),
+         .after = experiment,) |>
+  separate_wider_delim(experiment,
+                       delim = "_",
+                       names = c("sample_ID"),
+                       too_many = "drop")
+
+```
+
+### Renaming all column names
+
+```{r}
+
+data_clean_f <- data_clean_f |>
+  rename(
+    APC_positive = "Lymphocytes/Single Cells/Live cells/CD3/CD8/APC-multimer | Freq. of Parent",
+    PE_positive = "Lymphocytes/Single Cells/Live cells/CD3/CD8/PE-multimer | Freq. of Parent",
+    DP_positive = "Lymphocytes/Single Cells/Live cells/CD3/CD8/DP | Freq. of Parent")
+```
+
+### Export data
+
+```{r}
+
+saveRDS(data_clean_f, file = outfile_f_path)
 ```

@@ -4,34 +4,33 @@ format: html
 editor: visual
 ---
 
-### Clear workspace
+## Prepping
 
-```{r}
-
-rm(list = ls())
-```
-
-### Import Libraries
+Clearing the environment, loading the libraries and saving the path to the data folder.
 
 ```{r}
 #| message: false
+
+rm(list = ls())
+
 library("tidyverse")
 library("readxl")
-```
-
-### Setting the necessary filenames and folder paths
-
-```{r}
 
 data_path <- "~/projects/Group25_Project/data"
 
 if (!dir.exists(data_path)) {
   stop("The data needs to be loaded first, before running these script. Go to https://dtudk-my.sharepoint.com/:f:/r/personal/s194360_dtu_dk/Documents/R%20for%20BioData?csf=1&web=1&e=FMK1xA and dowload the data folder, then upload it as is.")
 }
+```
+
+## Barracoda
+
+### Setting the necessary filenames and folder paths
+
+```{r}
 
 raw_data_path <- file.path(data_path, "_raw")
 raw_data_path_barra <- file.path(raw_data_path, "barracoda")
-raw_data_path_flow <- file.path(raw_data_path, "flowjo")
 
 file_paths_barra <- list.files(path = raw_data_path_barra,
                     pattern = ".xlsx",
@@ -41,19 +40,14 @@ file_names_barra <- list.files(path = raw_data_path_barra,
                          pattern = "\\.xlsx",
                          full.names = FALSE)
 
-file_paths_flow <- list.files(path = raw_data_path_flow,
-                    pattern = ".xls",
-                    full.names = TRUE)
-
-outfile_name_barra <- "01_dat_load_barracoda.csv"
+outfile_name_barra <- "01_dat_load_barracoda.RDS"
 outfile_path_barra <- file.path(data_path, outfile_name_barra)
-
-outfile_name_flow <- "01_dat_load_flowjo.csv"
-outfile_path_flow <- file.path(data_path, outfile_name_flow)
 
 ```
 
-### Combining all excel files into one tsv file
+### Loading data
+
+Combining all excel files into one tsv file.
 
 Some data included information in the name that could not be found in the file - Eg: not KIR blocked, KIR blocked (\_KIR\_) and KIR double positive (\_KIR_DP)\
 Therefore this loading step does not exclusively clean, it also augments the data to some extent.
@@ -64,7 +58,7 @@ Therefore this loading step does not exclusively clean, it also augments the dat
 
 colnames <- c("barcode", "sample", "count.1", "input.1", "input.2", "input.3", "log_fold_change", "p", "-log10(p)", "masked_p (p = 1 if logFC < 0)", "-log10(masked_p)", "count.normalised (edgeR)", "input.normalised (edgeR)", "Number", "HLA", "Protein", "Peptide")
 
-data_ <- map(file_paths_barra,
+data_b <- map(file_paths_barra,
              ~read_excel(.x)) |>
   map(~select(.x,
               all_of(colnames))) |>
@@ -79,7 +73,34 @@ data_ <- map(file_paths_barra,
 
 ```
 
-### Loading FlowJo data
+### Export data
+
+```{r}
+
+saveRDS(data_b, file = outfile_path_barra)
+
+```
+
+## Flowjo
+
+### Setting the necessary filenames and folder paths
+
+```{r}
+
+raw_data_path <- file.path(data_path, "_raw")
+
+raw_data_path_flow <- file.path(raw_data_path, "flowjo")
+
+file_paths_flow <- list.files(path = raw_data_path_flow,
+                    pattern = ".xls",
+                    full.names = TRUE)
+
+outfile_name_flow <- "01_dat_load_flowjo.RDS"
+outfile_path_flow <- file.path(data_path, outfile_name_flow)
+
+```
+
+### Loading data
 
 ```{r}
 #| message: false
@@ -87,7 +108,7 @@ data_ <- map(file_paths_barra,
 
 #### DIVIDE BY 100 when removing %
 
-data_flow <- map(file_paths_flow, 
+data_f <- map(file_paths_flow, 
              ~read_excel(.x, col_types = 'text')) |>          # reading all files into tibbles
         map(~rename(.x,
                     experiment = "...1")) |>       # giving all columns names
@@ -97,12 +118,13 @@ data_flow <- map(file_paths_flow,
                     across(-experiment,
                            ~as.numeric(str_replace(str_remove(.x, " %"), ",", "."))/100))) |> 
         bind_rows()
+
 ```
 
-### Export loaded data file
+### Exporting data
 
 ```{r}
 
-write_csv(data_, outfile_path_barra)
-write_csv(data_flow, outfile_path_flow)
+saveRDS(data_f, file = outfile_path_flow)
+
 ```
