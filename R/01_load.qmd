@@ -22,15 +22,27 @@ library("readxl")
 
 ```{r}
 
+
+
 raw_data_path <- "~/projects/Group25_Project/_raw"
+raw_data_path_flow <- "~/projects/Group25_Project/_raw/flowjo_info"
+
 data_path <- "~/projects/Group25_Project/data"
+data_path_flow <- "~/projects/Group25_Project/data"
 
 file_paths <- list.files(path = raw_data_path,
                     pattern = ".xlsx",
                     full.names = TRUE)
 
+file_paths_flow <- list.files(path = raw_data_path_flow,
+                    pattern = ".xls",
+                    full.names = TRUE)
+
 outfile_name <- "01_dat_load.csv"
 outfile_path <- file.path(data_path, outfile_name)
+
+outfile_name_flow <- "01_dat_flow_load.csv"
+outfile_path_flow <- file.path(data_path_flow, outfile_name_flow)
 
 ```
 
@@ -47,14 +59,48 @@ colnames <- c("barcode", "sample", "count.1", "input.1", "input.2", "input.3", "
 
 data_ <- map(file_paths, 
              ~read_excel(.x)) |>          # reading all files into tibbles
-  map(~select(.x,
-              all_of(colnames))) |>       # giving all columns names
-  map(~filter(.x,
-              row_number() <= n()-1)) |>  # remove last row as it contained a formula
-  map(~mutate(.x,                         # fixing a type issue
-              "-log10(masked_p)" = as.numeric(.x[["-log10(masked_p)"]]))) |>
-  bind_rows()                             # merging all tibbles into one
+        map(~select(.x,
+                    all_of(colnames))) |>       # giving all columns names
+        map(~filter(.x,
+                    row_number() <= n()-1)) |>  # remove last row as it contained a formula
+        map(~mutate(.x,                         # fixing a type issue
+                    "-log10(masked_p)" = as.numeric(.x[["-log10(masked_p)"]]))) |>
+        bind_rows()                             # merging all tibbles into one
 
+```
+
+```{r}
+
+data_flow <- map(file_paths_flow, 
+                 ~read_excel(.x, col_types = 'text') |> 
+                  ~rename(.x, experiment = 1) |> 
+                   ~filter(row_number() <= n() - 2) |>  # remove access columns
+                   ~mutate_all(str_remove(.x, " %"))) |> 
+                   mutate_all(~as.numeric(str_replace(.x, ",", ".")))
+                   
+```
+
+```{r}
+data_test <- map(file_paths_flow, 
+             ~read_excel(.x, col_types = 'text')) |>
+  map(~colnames(.x))
+```
+
+```{r}
+data_ <- map(file_paths_flow, 
+             ~read_excel(.x, col_types = 'text')) |>          # reading all files into tibbles
+        map(~rename(.x,
+                    experiment = "...1")) |>       # giving all columns names
+        map(~filter(.x,
+                    row_number() <= n()-2)) |>
+        map(~mutate(.x, 
+                    across(-experiment,
+                           ~as.numeric(str_replace(str_remove(.x, " %"), ",", ".")))
+                    ))
+```
+
+```{r}
+data_flow |> map(class)
 ```
 
 ### Export loaded data file
