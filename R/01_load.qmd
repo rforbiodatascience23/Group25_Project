@@ -22,10 +22,8 @@ library("readxl")
 
 ```{r}
 
-
-
 raw_data_path <- "~/projects/Group25_Project/_raw"
-raw_data_path_flow <- "~/projects/Group25_Project/_raw/flowjo_info"
+raw_data_path_flow <- file.path(raw_data_path, "flowjo")
 
 data_path <- "~/projects/Group25_Project/data"
 
@@ -71,6 +69,9 @@ data_ <- map(file_paths,
 ### Loading FlowJo data
 
 ```{r}
+#| message: false
+#| warning: false
+
 data_flow <- map(file_paths_flow, 
              ~read_excel(.x, col_types = 'text')) |>          # reading all files into tibbles
         map(~rename(.x,
