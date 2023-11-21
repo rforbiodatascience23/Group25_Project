@@ -8,6 +8,7 @@ editor: visual
 
 ```{r}
 rm(list = ls())
+
 ```
 
 ### Import Libraries
@@ -22,11 +23,15 @@ library("readxl")
 
 ```{r}
 
-raw_data_path <- "~/projects/Group25_Project/_raw"
+data_path <- "~/projects/Group25_Project/data"
+
+if (!dir.exists(data_path)) {
+  stop("The data needs to be loaded first, before running these script. Go to https://dtudk-my.sharepoint.com/:f:/r/personal/s194360_dtu_dk/Documents/R%20for%20BioData?csf=1&web=1&e=FMK1xA and dowload the data folder, then upload it as is.")
+}
+
+raw_data_path <- file.path(data_path, "_raw")
 raw_data_path_barra <- file.path(raw_data_path, "barracoda")
 raw_data_path_flow <- file.path(raw_data_path, "flowjo")
-
-data_path <- "~/projects/Group25_Project/data"
 
 file_paths_barra <- list.files(path = raw_data_path_barra,
                     pattern = ".xlsx",
@@ -36,10 +41,10 @@ file_paths_flow <- list.files(path = raw_data_path_flow,
                     pattern = ".xls",
                     full.names = TRUE)
 
-outfile_name_barra <- "01_dat_load.csv"
+outfile_name_barra <- "01_dat_load_barracoda.csv"
 outfile_path_barra <- file.path(data_path, outfile_name_barra)
 
-outfile_name_flow <- "01_dat_flow_load.csv"
+outfile_name_flow <- "01_dat_load_flowjo.csv"
 outfile_path_flow <- file.path(data_path, outfile_name_flow)
 
 ```

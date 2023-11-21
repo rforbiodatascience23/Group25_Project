@@ -47,6 +47,17 @@ data_clean <- data_clean |>
   arrange(desc(log_fold_change))
 ```
 
+### Adding cohort variable
+
+```{r}
+data_clean <- data_clean|>
+  mutate(cohort = case_when(
+    grepl("AP", sample_ID) ~ "AP",
+    grepl("BS", sample_ID) ~ "BS",
+    grepl("BC", sample_ID) ~ "BC",
+    TRUE ~ NA ))
+```
+
 ### Extract information from sample column
 
 ```{r}
