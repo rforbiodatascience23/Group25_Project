@@ -23,11 +23,12 @@ library("readxl")
 ```{r}
 
 raw_data_path <- "~/projects/Group25_Project/_raw"
+raw_data_path_barra <- file.path(raw_data_path, "barracoda")
 raw_data_path_flow <- file.path(raw_data_path, "flowjo")
 
 data_path <- "~/projects/Group25_Project/data"
 
-file_paths <- list.files(path = raw_data_path,
+file_paths_barra <- list.files(path = raw_data_path_barra,
                     pattern = ".xlsx",
                     full.names = TRUE)
 
@@ -35,8 +36,8 @@ file_paths_flow <- list.files(path = raw_data_path_flow,
                     pattern = ".xls",
                     full.names = TRUE)
 
-outfile_name <- "01_dat_load.csv"
-outfile_path <- file.path(data_path, outfile_name)
+outfile_name_barra <- "01_dat_load.csv"
+outfile_path_barra <- file.path(data_path, outfile_name_barra)
 
 outfile_name_flow <- "01_dat_flow_load.csv"
 outfile_path_flow <- file.path(data_path, outfile_name_flow)
@@ -54,7 +55,7 @@ Therefore this loading step does not exclusively clean, it also augments the dat
 
 colnames <- c("barcode", "sample", "count.1", "input.1", "input.2", "input.3", "log_fold_change", "p", "-log10(p)", "masked_p (p = 1 if logFC < 0)", "-log10(masked_p)", "count.normalised (edgeR)", "input.normalised (edgeR)", "Number", "HLA", "Protein", "Peptide")
 
-data_ <- map(file_paths, 
+data_ <- map(file_paths_barra, 
              ~read_excel(.x)) |>          # reading all files into tibbles
         map(~select(.x,
                     all_of(colnames))) |>       # giving all columns names
@@ -88,6 +89,6 @@ data_flow <- map(file_paths_flow,
 
 ```{r}
 
-write_csv(data_, outfile_path)
+write_csv(data_, outfile_path_barra)
 write_csv(data_flow, outfile_path_flow)
 ```
