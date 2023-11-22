@@ -50,7 +50,9 @@ This drastically decreases the data load, from 35000+ observations to \~1000.
 ```{r}
 data_clean_b <- data_clean_b |>
   filter(p < 0.001 & log_fold_change > 2)|>
-  arrange(desc(log_fold_change))
+  arrange(desc(log_fold_change)) |>
+  mutate(sample = ifelse(!grepl("^[A-Z]{2}", sample), # add 'BC' to sample name 330
+         paste0("BC", sample), sample))
 ```
 
 ### Extract information from sample column
