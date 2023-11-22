@@ -76,13 +76,12 @@ ggplot(data_counts,
       geom_boxplot(width = boxplot_width,
                    alpha = 0.2)+
       scale_fill_manual(values=c(color_1, color_2)) +
-      theme_light(base_size = text_size)+
+      theme_minimal(base_size = text_size)+
       theme(legend.position = 'bottom')+
-    	labs(
-    		x='Patient Cohort',
-    		y='Count (n)',
-    		title = 'Write a clever observation here',
-    		subtitle ='2023',
-    		caption = 'data from xx'
-    )
+    	labs( x='Patient Cohort',
+        		y='Count (n)',
+        		title = 'Write a clever observation here',
+        		subtitle ='2023',
+        	  fill = 'KIR Blocking',
+        		caption = 'data from xx')
 ```
