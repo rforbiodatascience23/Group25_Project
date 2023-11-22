@@ -4,74 +4,176 @@ format: html
 editor: visual
 ---
 
-### Clear workspace
+## Prepping
 
-```{r}
-rm(list = ls())
-```
-
-### Import Packages
+Clearing the environment, loading the libraries and saving the path to the data folder.
 
 ```{r}
 #| message: false
+rm(list = ls())
+
 library(tidyverse)
 library(stringr)
 library(dplyr)
+
+data_path <- "~/projects/Group25_Project/data"
 ```
 
-### Load Data File
+## Barracoda
+
+### Loading the data
 
 ```{r}
 #| message: false
-data_file <- read_csv(file = '~/projects/Group25_Project/data/01_dat_load.csv')
-data_path <- "~/projects/Group25_Project/data"
-outfile_path <- file.path(data_path, '02_dat_clean.csv')
-```
 
-### Filter Significant Subset
+data_load_b_path <- file.path(data_path, "01_dat_load_barracoda.RDS")
 
-```{r}
-sign_data <- data_file |>
-             filter(p < 0.001 & log_fold_change > 2)|> # what about sign. negative change?
-             arrange(desc(log_fold_change)) |>
-             mutate_if(is.numeric, round, digits=4) # consider if we should round (p-value)
-```
+outfile_b_path <- file.path(data_path, '02_dat_clean_barracoda.RDS')
 
-```{r}
-sign_data <- sign_data |>
-             mutate(cohort_type = case_when(
-                                  str_detect(sample, "KIR_DP") ~ "KIR_DP",
-                                  str_detect(sample, "KIR") ~ "KIR",
-                                  .default = "MHC"),  
-                    after = sample,
-                    cohort_type = factor(cohort_type,
-                                         levels=c("KIR_DP", "KIR", "MHC"))
-               ) |>
-            separate_wider_delim(
-                    "sample",
-                    delim = "_",
-                    names = c("SampleID"),
-                    too_many = "drop"
-                )
-
+data_load_b <- read_rds(file = data_load_b_path)
 
 ```
 
-#### Subset data set into cohorts (might not need to)
+### Removing irrelevant columns
 
 ```{r}
-AP_data <- sign_data |>
-           filter(grepl('AP', SampleID))
+cols_to_keep <-  c("barcode", "sample", "count.1", "log_fold_change", "p", "HLA", "Protein", "Peptide", "filename")
+  
+data_clean_b <- data_load_b|>
+  select(all_of(cols_to_keep))
+```
 
-BS_data <- sign_data |>
-           filter(grepl('BS', SampleID))
+### Filtering significant subset
 
-BC_data <- sign_data |>
-           filter(grepl('BC', SampleID))
+This drastically decreases the data load, from 35000+ observations to \~1000.
+
+```{r}
+data_clean_b <- data_clean_b |>
+  filter(p < 0.001 & log_fold_change > 2)|>
+  arrange(desc(log_fold_change))
+```
+
+### Extract information from sample column
+
+```{r}
+data_clean_b <- data_clean_b |>
+  mutate(KIR_blocking = factor(case_when(str_detect(sample, "KIR") ~ "1",
+                                         TRUE ~ "0"),
+                               levels = c("1", "0")),
+         double_positive = factor(case_when(str_detect(sample, "KIR_DP") ~ "1",
+                                         TRUE ~ "0"),
+                               levels = c("1", "0")),
+         .after = sample,) |>
+  separate_wider_delim("sample",
+                       delim = "_",
+                       names = c("sample_ID"),
+                       too_many = "drop") |>
+  mutate(cohort =
+           factor(
+             case_when(
+               grepl("AP", sample_ID) ~ "AP",
+               grepl("BS", sample_ID) ~ "BS",
+               grepl("BC", sample_ID) ~ "BC",
+               TRUE ~ NA ),
+             levels = c("AP", "BS", "BC")),
+         .after = "sample_ID")
+
+```
+
+### Extract information from protein column
+
+```{r}
+data_clean_b <- data_clean_b |>
+  mutate(Protein =
+           factor(
+             case_when(
+               str_detect(Protein, "QHD43415_1") ~ "ORF1",
+               str_detect(Protein, "QHD43423_2") ~ "Nucleocapsid",
+               str_detect(Protein, "QHD43416_1") ~ "Spike", #surface
+               str_detect(Protein, "QHD43420_1") ~ "ORF6",
+               str_detect(Protein, "QHD43419_1") ~ "Membrane",
+               str_detect(Protein, "QHD43417_1") ~ "ORF3",
+               str_detect(Protein, "QHD43421_1") ~ "ORF7",
+               str_detect(Protein, "QHD43418_1") ~ "Envelope",
+               str_detect(Protein, "QHI42199_1") ~ "ORF10",
+               str_detect(Protein, "QHD43422_1") ~ "ORF8",
+               .default = "Unknown"),
+             levels = c("ORF1", "Nucleocapsid", "Spike", "ORF6", "Membrane", "ORF3",
+                        "ORF7", "Envelope", "ORF10", "ORF8", "Unknown" )))
+```
+
+### Renaming some columns for consistency
+
+```{r}
+data_clean_b <- data_clean_b |>
+  rename(protein = Protein,
+         count = "count.1",
+         peptide = Peptide
+         )
 ```
 
 ### Export data
 
 ```{r}
-write_csv(sign_data, outfile_path)
+saveRDS(data_clean_b, file = outfile_b_path)
+```
+
+## Flowjo
+
+### Loading the data
+
+```{r}
+#| message: false
+
+data_load_f_path <- file.path(data_path, "01_dat_load_flowjo.RDS")
+
+data_load_f <- read_rds(file = data_load_f_path)
+
+outfile_f_path <- file.path(data_path, '02_dat_clean_flowjo.RDS')
+```
+
+### Removing irrelevant columns
+
+```{r}
+cols_to_keep <-  c("experiment", "Lymphocytes/Single Cells/Live cells/CD3/CD8/APC-multimer | Freq. of Parent", "Lymphocytes/Single Cells/Live cells/CD3/CD8/DP | Freq. of Parent", "Lymphocytes/Single Cells/Live cells/CD3/CD8/PE-multimer | Freq. of Parent")
+
+data_clean_f <- data_load_f|>
+  select(all_of(cols_to_keep))
+```
+
+### Extract information from experiment column
+
+```{r}
+
+data_clean_f <- data_clean_f |>
+  mutate(KIR_blocking =
+           factor(
+             case_when(
+               str_detect(experiment, "KIR") ~ "1",
+               TRUE ~ "0"),
+             levels = c("1", "0")),
+         .after = experiment,) |>
+  separate_wider_delim(experiment,
+                       delim = "_",
+                       names = c("sample_ID"),
+                       too_many = "drop")
+
+```
+
+### Renaming all column names
+
+```{r}
+
+data_clean_f <- data_clean_f |>
+  rename(
+    APC_positive = "Lymphocytes/Single Cells/Live cells/CD3/CD8/APC-multimer | Freq. of Parent",
+    PE_positive = "Lymphocytes/Single Cells/Live cells/CD3/CD8/PE-multimer | Freq. of Parent",
+    DP_positive = "Lymphocytes/Single Cells/Live cells/CD3/CD8/DP | Freq. of Parent")
+```
+
+### Export data
+
+```{r}
+
+saveRDS(data_clean_f, file = outfile_f_path)
 ```
