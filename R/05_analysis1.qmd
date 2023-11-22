@@ -26,7 +26,28 @@ data_flow <- read_rds(file = '~/projects/Group25_Project/data/02_dat_clean_flowj
 ```
 
 ```{r}
-data_barra |> 
-  group_by(sample_ID) |> 
-  summarize(total_count = sum('count',na.rm = TRUE))
+# OBS: in the data_barra we have 58 samples, and the data_flow only have 56 (missing 2). When merging the two, 3 samples from data_barra does not overlap with data_flow (we are missing flowjo data for a total of 5 samples)
+
+count_flow <- data_barra |> 
+              group_by(cohort, sample_ID) |> 
+              summarise(total_count = sum(count, na.rm = TRUE)) |> 
+              right_join(data_flow, by = 'sample_ID')
+
+count_flow
+```
+
+```{r}
+data_freq <- data_barra |>
+                  left_join(count_flow, by = "sample_ID") |>
+                  mutate(count_fraction = (count / total_count))|> # count fraction
+                  mutate(Freq = count_fraction* 100*(APC_positive)) # Estimated frequency
+
+print(data_freq)
+```
+
+```{r}
+# Took a look at one of the samples to see if the calculation is right.
+# We get another count fraction since we excluded non-significant counts (and hereby also different freq)
+data_freq |>
+  filter(sample_ID == 'BC103')
 ```
