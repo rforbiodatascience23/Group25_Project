@@ -1,0 +1,32 @@
+---
+title: "Analysis: Estimated Frequency"
+format: html
+editor: visual
+---
+
+#### Clean Work Environment
+
+```{r}
+rm(list = ls())
+```
+
+#### Load Packages
+
+```{r}
+#| message: false
+library(tidyverse)
+```
+
+#### Load Data
+
+```{r}
+#| message: false
+data_barra <- read_rds(file = '~/projects/Group25_Project/data/02_dat_clean_barracoda.RDS')
+data_flow <- read_rds(file = '~/projects/Group25_Project/data/02_dat_clean_flowjo.RDS')
+```
+
+```{r}
+data_barra |> 
+  group_by(sample_ID) |> 
+  summarize(total_count = sum('count',na.rm = TRUE))
+```
