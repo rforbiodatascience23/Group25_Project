@@ -52,7 +52,8 @@ data_clean_b <- data_clean_b |>
   filter(p < 0.001 & log_fold_change > 2)|>
   arrange(desc(log_fold_change)) |>
   mutate(sample = ifelse(!grepl("^[A-Z]{2}", sample), # add 'BC' to sample name 330
-         paste0("BC", sample), sample))
+         paste0("BC", sample), sample),
+         sample = str_replace(sample, '-','')) # remove dashes from some sample-names
 ```
 
 ### Extract information from sample column
