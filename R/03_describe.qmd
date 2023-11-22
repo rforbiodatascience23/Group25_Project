@@ -15,6 +15,7 @@ rm(list = ls())
 ```{r}
 #| message: false
 library(tidyverse)
+library("table1")
 ```
 
 #### Load Data
@@ -24,10 +25,22 @@ library(tidyverse)
 data_b <- read_rds(file = '~/projects/Group25_Project/data/02_dat_clean_barracoda.RDS')
 ```
 
-## Number of Responses
+## Summary table
+
+```{r}
+summary_table <- data_b |>
+                 drop_na() |> #We can remove this when 'BC' has been added to sample 330
+                 table1(x = formula(~ KIR_blocking + log_fold_change+protein + HLA| cohort),
+                        data = _)
+
+summary_table
+```
+
+## Boxplot: Number of Responses
 
 ```{r}
 data_counts <- data_b |>
+  drop_na() |> # REMOVE
                count(cohort, sample_ID) |>
                left_join(data_b |> 
                          distinct(sample_ID, 
@@ -36,15 +49,20 @@ data_counts <- data_b |>
                       by = "sample_ID")
 ```
 
+### Visualisation
+
 ```{r}
+
+color_1 <- "#69b3a2"
+color_2 <- "grey"
+
 text_size <- 14
-dot_size <- 0.1
-dot_color <- "#696969"
+dot_size <- 0.5
 
 boxplot_width <- 0.6
 ```
 
-## BoxPlots
+### Plotting
 
 ```{r}
 
@@ -52,9 +70,12 @@ ggplot(data_counts,
        aes(x = cohort, 
            y = n, 
            fill = KIR_blocking)) + 
+      geom_jitter(size=dot_size, shape=1, ) +
+      geom_violin(width = boxplot_width,
+                   alpha = 0.8)+
       geom_boxplot(width = boxplot_width,
-                   outlier.colour = "red")+
-      geom_jitter(width = dot_size)+
+                   alpha = 0.2)+
+      scale_fill_manual(values=c(color_1, color_2)) +
       theme_light(base_size = text_size)+
       theme(legend.position = 'bottom')+
     	labs(
