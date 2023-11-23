@@ -25,29 +25,35 @@ data_barra <- read_rds(file = '~/projects/Group25_Project/data/02_dat_clean_barr
 data_flow <- read_rds(file = '~/projects/Group25_Project/data/02_dat_clean_flowjo.RDS')
 ```
 
-```{r}
-# OBS: in the data_barra we have 58 samples, and the data_flow only have 56 (missing 2). When merging the two, 3 samples from data_barra does not overlap with data_flow (we are missing flowjo data for a total of 5 samples)
+### Calculate estimated frequency
 
+```{r}
+#| warning: false
+joined_data <- data_barra |>
+               inner_join(data_flow, by='sample_ID')
+```
+
+```{r}
 count_flow <- data_barra |> 
-              group_by(cohort, sample_ID) |> 
+              group_by(sample_ID) |> 
               summarise(total_count = sum(count, na.rm = TRUE)) |> 
-              right_join(data_flow, by = 'sample_ID')
+              right_join(joined_data, by = 'sample_ID')
 
-count_flow
+count_flow |> filter(sample_ID == 'BC103') # check if value holds
 ```
 
 ```{r}
-data_freq <- data_barra |>
-                  left_join(count_flow, by = "sample_ID") |>
-                  mutate(count_fraction = (count / total_count))|> # count fraction
-                  mutate(Freq = count_fraction* 100*(APC_positive)) # Estimated frequency
-
-print(data_freq)
+data_freq <-  count_flow |>
+              mutate(count_fraction = (count / total_count)) |> # count fraction
+              mutate(Freq = count_fraction*PE_positive)       # Estimated frequency
 ```
+
+### Filter for significant subset
 
 ```{r}
-# Took a look at one of the samples to see if the calculation is right.
-# We get another count fraction since we excluded non-significant counts (and hereby also different freq)
-data_freq |>
-  filter(sample_ID == 'BC103')
+signi_data <- data_freq |>
+              filter(p < 0.001 & log_fold_change > 2)|>
+              arrange(desc(log_fold_change))
 ```
+
+## Plot of frequencies?
