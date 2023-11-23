@@ -27,9 +27,7 @@ data_path <- "~/projects/Group25_Project/data"
 #| message: false
 
 data_load_b_path <- file.path(data_path, "01_dat_load_barracoda.RDS")
-
 outfile_b_path <- file.path(data_path, '02_dat_clean_barracoda.RDS')
-
 data_load_b <- read_rds(file = data_load_b_path)
 
 ```
@@ -49,11 +47,9 @@ This drastically decreases the data load, from 35000+ observations to \~1000.
 
 ```{r}
 data_clean_b <- data_clean_b |>
-  filter(p < 0.001 & log_fold_change > 2)|>
-  arrange(desc(log_fold_change)) |>
-  mutate(sample = ifelse(!grepl("^[A-Z]{2}", sample), # add 'BC' to sample name 330
-         paste0("BC", sample), sample),
-         sample = str_replace(sample, '-','')) # remove dashes from some sample-names
+                mutate(sample = ifelse(!grepl("^[A-Z]{2}", sample), # add 'BC' to sample
+                       paste0("BC", sample), sample),
+                       sample = str_replace(sample, '-','')) # remove dashes
 ```
 
 ### Extract information from sample column
