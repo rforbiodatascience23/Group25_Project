@@ -29,7 +29,7 @@ data_b <- read_rds(file = '~/projects/Group25_Project/data/02_dat_clean_barracod
 
 ```{r}
 summary_table <- data_b |>
-                 drop_na() |> #We can remove this when 'BC' has been added to sample 330
+                 drop_na() |> ## OBS? ###
                  table1(x = formula(~ KIR_blocking + log_fold_change+protein + HLA| cohort),
                         data = _)
 
@@ -40,7 +40,7 @@ summary_table
 
 ```{r}
 data_counts <- data_b |>
-  drop_na() |> # REMOVE
+               drop_na() |> ## OBS? ###
                count(cohort, sample_ID) |>
                left_join(data_b |> 
                          distinct(sample_ID, 
