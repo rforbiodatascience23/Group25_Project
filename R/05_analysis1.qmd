@@ -38,12 +38,10 @@ count_flow <- data_barra |>
               group_by(sample_ID) |> 
               summarise(total_count = sum(count, na.rm = TRUE)) |> 
               right_join(joined_data, by = 'sample_ID')
-
-count_flow |> filter(sample_ID == 'BC103') # check if value holds
 ```
 
 ```{r}
-data_freq <-  count_flow |>
+count_flow <- count_flow |>
               mutate(count_fraction = (count / total_count)) |> # count fraction
               mutate(Freq = count_fraction*PE_positive)       # Estimated frequency
 ```
@@ -51,9 +49,21 @@ data_freq <-  count_flow |>
 ### Filter for significant subset
 
 ```{r}
-signi_data <- data_freq |>
+signi_data <- count_flow |>
               filter(p < 0.001 & log_fold_change > 2)|>
               arrange(desc(log_fold_change))
 ```
 
-## Plot of frequencies?
+## Plot of logfold change vs epitope binding
+
+```{r}
+
+plot_data <- count_flow |>
+             filter(log_fold_change>-2)
+```
+
+```{r}
+
+ggplot(count_flow, 
+       aes(x=protein, y=log_fold_change))
+```
