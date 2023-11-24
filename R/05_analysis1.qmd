@@ -57,13 +57,36 @@ signi_data <- count_flow |>
 ## Plot of logfold change vs epitope binding
 
 ```{r}
+line_color ='#636363' 
+textsize = 10 
 
-plot_data <- count_flow |>
-             filter(log_fold_change>-2)
 ```
 
 ```{r}
 
-ggplot(count_flow, 
-       aes(x=protein, y=log_fold_change))
+plot_data <- count_flow |>
+             mutate(HLA = factor(HLA)) |>
+             filter(log_fold_change > 0 & p < 0.001) #|>
+             #filter(sample_ID == 'AP0201')
+```
+
+```{r}
+
+ggplot(plot_data, 
+       aes( x = peptide, 
+            y = log_fold_change, 
+            color = protein))+
+       facet_grid(~HLA)+
+       geom_point(aes(size = Freq))+
+       geom_hline(yintercept = 2, 
+                  color= line_color )+
+       theme_gray()+
+       theme(axis.text.x = element_blank(), 
+             panel.margin.x=unit(0, "lines"),
+             legend.position = 'bottom' )+
+       labs(title='Bubbles', 
+             x="Peptide", 
+             y="LogFC", 
+             color= 'Protein', 
+             size='Est.freq.') 
 ```
