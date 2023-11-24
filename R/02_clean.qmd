@@ -67,6 +67,7 @@ data_clean_b <- data_clean_b |>
                                          TRUE ~ "0"),
                                levels = c("1", "0")),
          .after = sample,) |>
+  mutate(HLA = factor(HLA)) |>
   separate_wider_delim("sample",
                        delim = "_",
                        names = c("sample_ID"),
