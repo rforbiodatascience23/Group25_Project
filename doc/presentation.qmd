@@ -3,7 +3,7 @@ title: "Group 25 Presentation"
 authors: "Darya Trubach, Emilie Sofie Engdal, Manon Kirstine Chevalier"
 format:
   revealjs:
-    theme: solarized
+    theme: moon
     smaller: true
     scrollable: true
     embed-resources: true
@@ -16,6 +16,8 @@ editor: visual
 
 ::: notes
 Themes to use: dark, moon, night, simple, solarized
+
+https://quarto.org/docs/presentations/revealjs/#overview
 :::
 
 ## Biological background
