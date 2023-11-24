@@ -1,51 +1,117 @@
 ---
-title: "Loading script"
+title: "03_describe"
 format: html
 editor: visual
 ---
 
-#### Clean Work Environment
+## Prepping
 
 ```{r}
+#| message: false
+
 rm(list = ls())
-```
 
-#### Load Packages
-
-```{r}
-#| message: false
 library(tidyverse)
+library("table1")
 ```
 
-#### Load Data
+## Barracoda
+
+### Load Data
 
 ```{r}
 #| message: false
-data_load <- load(file = '~/projects/Group25_Project/data/02_dat_clean.RDS')
+data_b <- read_rds(file = '~/projects/Group25_Project/data/02_dat_clean_barracoda.RDS')
 ```
 
-```{r}
-view(data_load)
-```
-
-## Number of Responses
-
-```{r}
-data_counts <- data_load |>
-               count(cohort, sample_ID) |>
-               left_join(data_load |> 
-                         distinct(sample_ID, 
-                                  .keep_all = TRUE) |>
-               select(sample_ID, KIR_blocking), 
-                      by = "sample_ID")
-
-print(data_counts)
-```
-
-## BoxPlots
+### Table One
 
 ```{r}
 
-ggplot(data_counts, aes(x=cohort, y=n, fill=KIR_blocking)) + 
-    geom_boxplot()
+summary_table <- data_b |>
+  table1(x = formula(~ KIR_blocking + log_fold_change+protein + HLA| cohort),
+         data = _)
+
+summary_table
+
+saveRDS(summary_table, file = "../results/tableOne_b.RDS")
+```
+
+### Boxplot: Number of Responses
+
+```{r}
+#| message: false
+
+data_counts <- data_b |>
+  count(cohort, sample_ID) |>
+  left_join(data_b |> 
+              distinct(sample_ID,
+                       .keep_all = TRUE) |>
+              select(sample_ID, KIR_blocking), 
+            by = "sample_ID")
+
+# visual settings
+color_1 <- "#69b3a2"
+color_2 <- "grey"
+text_size <- 14
+dot_size <- 0.5
+boxplot_width <- 0.6
+
+# plotting
+ggplot(data_counts, 
+       aes(x = cohort, 
+           y = n, 
+           fill = KIR_blocking)) + 
+      geom_jitter(size=dot_size, shape=1, ) +
+      geom_violin(width = boxplot_width,
+                   alpha = 0.8)+
+      geom_boxplot(width = boxplot_width,
+                   alpha = 0.2)+
+      scale_fill_manual(values=c(color_1, color_2)) +
+      theme_minimal(base_size = text_size)+
+      theme(legend.position = 'bottom')+
+    	labs( x='Patient Cohort',
+        		y='Count (n)',
+        		title = 'Write a clever observation here',
+        		subtitle ='2023',
+        	  fill = 'KIR Blocking',
+        		caption = 'data from xx')
+
+ggsave("../results/Boxplot_Nb_Responses.png")
+```
+
+## Flowjo
+
+### Load data
+
+```{r}
+#| message: false
+data_f <- read_rds(file = '~/projects/Group25_Project/data/02_dat_clean_flowjo.RDS')
+```
+
+### Table One
+
+```{r}
+
+summary_table_f <- data_f |>
+  mutate(KIR_blocking = factor(KIR_blocking, levels = c(1, 0),
+                               labels = c("KIR-blocked",
+                                          "Not KIR-blocked"))) |>
+  table1(x = formula(~ APC_positive + DP_positive + PE_positive | KIR_blocking),
+         data = _)
+
+summary_table_f
+
+saveRDS(summary_table, file = "../results/tableOne_f.RDS")
+```
+
+## **Combining Barracoda and Flowjo**
+
+Don't know how we should join the data but it should probably be done here:
+
+```{r}
+
+# data_bf <- inner_join(data_counts, data_f, by = c("sample_ID", "KIR_blocking"))
+
+data_bf
 ```
