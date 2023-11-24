@@ -6,6 +6,7 @@ format:
     theme: solarized
     smaller: true
     scrollable: true
+    embed-resources: true
     logo: DTU_logo_Corp_Red_RGB.png
     footer: "R4BDS"
 editor: visual
@@ -74,3 +75,4 @@ Speaker notes go here.
 ::: notes
 Speaker notes go here.
 :::
+
