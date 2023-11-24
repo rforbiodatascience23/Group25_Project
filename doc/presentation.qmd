@@ -1,25 +1,76 @@
 ---
 title: "Group 25 Presentation"
-author: "Group 25"
-format: revealjs
+authors: "Darya Trubach, Emilie Sofie Engdal, Manon Kirstine Chevalier"
+format:
+  revealjs:
+    theme: solarized
+    smaller: true
+    scrollable: true
+    logo: DTU_logo_Corp_Red_RGB.png
+    footer: "R4BDS"
 editor: visual
 ---
 
-## Quarto
+# Introduction
 
-Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
+::: notes
+Themes to use: dark, moon, night, simple, solarized
+:::
 
-## Bullets
+## Biological background
 
-When you click the **Render** button a document will be generated that includes:
+::: notes
+Speaker notes go here.
+:::
 
--   Content authored with markdown
--   Output from executable code
+# Methods
 
-## Code
+## Data
 
-When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+::: notes
+Speaker notes go here.
+:::
 
-```{r}
-1 + 1
-```
+## Computations
+
+::: notes
+Speaker notes go here.
+:::
+
+# Results
+
+::: notes
+Speaker notes go here.
+:::
+
+## Visualisation #1
+
+::: notes
+Speaker notes go here.
+:::
+
+## Visualisation #2
+
+::: notes
+Speaker notes go here.
+:::
+
+## Visualisation #3
+
+::: notes
+Speaker notes go here.
+:::
+
+# Discussion
+
+Insert some conclusions here
+
+::: notes
+Speaker notes go here.
+:::
+
+# Questions?
+
+::: notes
+Speaker notes go here.
+:::
