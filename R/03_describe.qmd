@@ -35,6 +35,8 @@ summary_table <- data_b |>
 summary_table
 
 saveRDS(summary_table, file = "../results/tableOne_b.RDS")
+
+
 ```
 
 ### Boxplot: Number of Responses
@@ -94,6 +96,9 @@ data_f <- read_rds(file = '~/projects/Group25_Project/data/02_dat_clean_flowjo.R
 ```{r}
 
 summary_table_f <- data_f |>
+  mutate(APC_positive = APC_positive*100,    # in percent
+         DP_positive = DP_positive*100,      # in percent
+         PE_positive = PE_positive*100) |>   # in percent
   mutate(KIR_blocking = factor(KIR_blocking, levels = c(1, 0),
                                labels = c("KIR-blocked",
                                           "Not KIR-blocked"))) |>
@@ -112,6 +117,5 @@ Don't know how we should join the data but it should probably be done here:
 ```{r}
 
 # data_bf <- inner_join(data_counts, data_f, by = c("sample_ID", "KIR_blocking"))
-
-data_bf
+# data_bf
 ```
