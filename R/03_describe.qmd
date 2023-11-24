@@ -28,8 +28,8 @@ data_b <- read_rds(file = '~/projects/Group25_Project/data/02_dat_clean_barracod
 ## Summary table
 
 ```{r}
+
 summary_table <- data_b |>
-                 drop_na() |> ## OBS? ###
                  table1(x = formula(~ KIR_blocking + log_fold_change+protein + HLA| cohort),
                         data = _)
 
