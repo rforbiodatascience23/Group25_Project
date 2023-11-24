@@ -1,0 +1,51 @@
+---
+title: "Loading script"
+format: html
+editor: visual
+---
+
+#### Clean Work Environment
+
+```{r}
+rm(list = ls())
+```
+
+#### Load Packages
+
+```{r}
+#| message: false
+library(tidyverse)
+```
+
+#### Load Data
+
+```{r}
+#| message: false
+data_load <- load(file = '~/projects/Group25_Project/data/02_dat_clean.RDS')
+```
+
+```{r}
+view(data_load)
+```
+
+## Number of Responses
+
+```{r}
+data_counts <- data_load |>
+               count(cohort, sample_ID) |>
+               left_join(data_load |> 
+                         distinct(sample_ID, 
+                                  .keep_all = TRUE) |>
+               select(sample_ID, KIR_blocking), 
+                      by = "sample_ID")
+
+print(data_counts)
+```
+
+## BoxPlots
+
+```{r}
+
+ggplot(data_counts, aes(x=cohort, y=n, fill=KIR_blocking)) + 
+    geom_boxplot()
+```
