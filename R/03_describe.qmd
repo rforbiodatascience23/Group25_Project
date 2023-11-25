@@ -59,8 +59,28 @@ summary_table_f
 
 # Descriptive Plots
 
+### Protein count distribution 
+
 ```{r}
 
+```
+
+```{r}
+
+protein_stack <- data_b |> 
+                count(HLA, protein) |>
+                ggplot(aes(fill = protein, 
+                           y = n, 
+                           x = HLA)) + 
+                  geom_bar( position="stack", 
+                            width = 0.3,
+                            stat="identity") + 
+                  theme_minimal()+
+                  labs( x = element_blank(),
+                      	y ='Number of Peptides',
+                        title = 'Distribution of SARS-Cov9 Genome Proteins',
+                      	fill = 'Protein',
+                      	caption = 'S. K. Saini et al., Sci. Immunol. 10.1126/sciimmunol.abf7550 (2021)')
 ```
 
 ### Barracoda
