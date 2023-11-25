@@ -66,6 +66,7 @@ This is why the filtering happens at this step and not later.
 
 sig_data <- joined_data |> 
   filter(p < 0.001 & log_fold_change > 2)
+
 ```
 
 ### **Adding a "paired" column**
@@ -79,14 +80,14 @@ This means that the same pMHC multimer has been tested in both experiments, i.e.
 joined_data <- joined_data |> 
   group_by(sample_ID, cohort, HLA, peptide) |>
   mutate(paired = factor(
-                  ifelse((all(c(0, 1) %in% KIR_blocking)), 1, 0)),
+                  if_else((all(c(0, 1) %in% KIR_blocking)), 1, 0)),
          .after = cohort) |>
   ungroup()
 
 sig_data <- sig_data |> 
             group_by(sample_ID, cohort, HLA, peptide) |>
             mutate(paired = factor(
-                            ifelse((all(c(0, 1) %in% KIR_blocking)), 1, 0)),
+                            if_else((all(c(0, 1) %in% KIR_blocking)), 1, 0)),
                    .after = cohort) |>
             ungroup()
 
@@ -115,7 +116,5 @@ saveRDS(joined_data, file = outfile_joined_path)
 
 # only significant data, pairs are labelled
 saveRDS(sig_data, file = outfile_sig_pairing_path)
-
-
 
 ```
