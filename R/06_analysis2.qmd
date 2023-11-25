@@ -1,0 +1,111 @@
+---
+title: "Cleaning Data"
+format: html
+editor: visual
+---
+
+## Prepping
+
+Clearing the environment, loading the libraries and saving the path to the data folder.
+
+```{r}
+#| message: false
+rm(list = ls())
+
+library(tidyverse)
+library(stringr)
+library(dplyr)
+#library(ggbeeswarm)
+
+data_path <- "~/projects/Group25_Project/data"
+```
+
+### Loading the data
+
+```{r}
+#| message: false
+
+data_aug_path <- file.path(data_path, "03_dat_aug.RDS")
+data_aug <- read_rds(file = data_aug_path)
+
+```
+
+### Reducing to only paired data
+
+```{r}
+paired_data <- data_aug |> 
+  filter(p < 0.001 & log_fold_change > 2) |>
+  group_by(sample_ID, cohort, HLA, peptide) |>
+  filter(any(KIR_blocking == 0) & any(KIR_blocking == 1))
+
+```
+
+### **Plotting count for each paired, significant peptide**
+
+```{r}
+
+paired_data |> 
+  ggplot(aes(x = peptide,
+             y = count,
+             color = KIR_blocking,
+             shape = cohort)) +
+  geom_point() +
+  facet_grid(. ~ HLA,
+             scales = "free_x",
+             space = "free_x") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+  
+
+```
+
+### **Plotting count fraction for each paired, significant peptide**
+
+```{r}
+
+paired_data |> 
+  ggplot(aes(x = peptide,
+             y = count_fraction,
+             color = KIR_blocking,
+             shape = cohort)) +
+  geom_point() +
+  facet_grid(. ~ HLA,
+             scales = "free_x",
+             space = "free_x") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+  
+
+```
+
+### Plotting count fraction for each cohort, in the paired dataset
+
+```{r}
+
+paired_data |> 
+  ungroup() |>
+  ggplot(aes(x = KIR_blocking,
+             y = count_fraction,
+             color = sample_ID,
+             shape = HLA)) +
+  geom_point(size = 2.5) +
+  facet_grid(. ~ cohort,
+             scales = "free_x",
+             space = "free_x")
+
+```
+
+### 
+Plotting count fraction for each cohort, all data
+
+```{r}
+
+data_aug |> 
+  ungroup() |>
+  ggplot(aes(x = KIR_blocking,
+             y = count_fraction)) +
+  geom_point(size = 2.5,
+             position = position_dodge2(w = 0.5)) +
+  facet_grid( HLA ~ cohort,
+             scales = "free_x",
+             space = "free_x")
+
+```
