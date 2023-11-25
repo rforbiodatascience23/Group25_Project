@@ -34,7 +34,7 @@ data_joined <- read_rds(file = '~/projects/Group25_Project/data/03_dat_aug_joine
 (Not relevant now, but might need to group by response)
 
 ```{r}
-plot_data <-  data_aug |>
+plot_data <-  data_sig_pairing |>
   mutate(response = case_when(
     log_fold_change > 2 ~ 'High',
     log_fold_change > 1.5 & log_fold_change <= 2 ~ 'Medium',

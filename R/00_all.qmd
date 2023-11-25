@@ -6,7 +6,7 @@ editor: visual
 
 ### Prepping
 
-Clearing the environment, loading the libraries.
+Clearing the environment, loading the libraries, setting some paths, and checking that the data has been uploaded.
 
 ```{r}
 #| message: false
@@ -15,15 +15,34 @@ rm(list = ls())
 
 library(quarto)
 
+results_path <- "~/projects/Group25_Project/results"
+data_path <- "~/projects/Group25_Project/data"
+
+if (!dir.exists(data_path)) {
+  stop("The data needs to be loaded first, before running this script. Go to https://dtudk-my.sharepoint.com/:f:/r/personal/s194360_dtu_dk/Documents/R%20for%20BioData?csf=1&web=1&e=FMK1xA and dowload the data folder, then upload it as is.")
+}
+
 ```
 
-### Deleting the previously generated files - NOT DONE YET
+### Deleting the previously generated files
 
-The data files created in `01_load` and `02_clean`.
-
-The `.html` files generated from all R-scripts.
+The files in data and the files in results should be deleted before starting
 
 ```{r}
+#| message: false
+#| warning: false
+
+# emptying results folder, including subdirectories
+file.remove(list.files(results_path, full.names = TRUE, recursive = TRUE))
+unlink(results_path, recursive = TRUE, force = TRUE)
+
+# emptying results folder, keeping subdirectories
+file.remove(list.files(data_path, full.names = TRUE, recursive = FALSE))
+
+if (!dir.exists(results_path)) {
+dir.create(results_path)
+}
+
 
 ```
 
@@ -46,29 +65,34 @@ file.rename(from = "02_clean.html",
 file.rename(from = "02_clean_files",
             to = "../results/02_clean_files")
 
-# quarto_render("03_describe.qmd")
-# file.rename(from = "03_describe.html",
-#             to = "../results/03_describe.html")
-# file.rename(from = "03_describe_files",
-#             to = "../results/03_describe_files")
-# 
-# quarto_render("04_augment.qmd")
-# file.rename(from = "04_augment.html",
-#             to = "../results/04_augment.html")
-# file.rename(from = "04_augment_files",
-#             to = "../results/04_augment_files")
-# 
-# quarto_render("05_analysis1.qmd")
-# file.rename(from = "05_analysis1.html",
-#             to = "../results/05_analysis1.html")
-# file.rename(from = "05_analysis1_files",
-#             to = "../results/05_analysis1_files")
-# 
-# quarto_render("06_analysis2.qmd")
-# file.rename(from = "06_analysis2.html",
-#             to = "../results/06_analysis2.html")
-# quarto_render("06_analysis2.qmd")
-# file.rename(from = "06_analysis2_files",
-#             to = "../results/06_analysis2_files")
+quarto_render("03_augment.qmd")
+file.rename(from = "03_augment.html",
+            to = "../results/03_augment.html")
+file.rename(from = "03_augment_files",
+            to = "../results/03_augment_files")
+
+quarto_render("04_describe.qmd")
+file.rename(from = "04_describe.html",
+            to = "../results/04_describe.html")
+file.rename(from = "04_describe_files",
+            to = "../results/04_describe_files")
+
+quarto_render("05_analysis1.qmd")
+file.rename(from = "05_analysis1.html",
+            to = "../results/05_analysis1.html")
+file.rename(from = "05_analysis1_files",
+            to = "../results/05_analysis1_files")
+
+quarto_render("06_analysis2.qmd")
+file.rename(from = "06_analysis2.html",
+            to = "../results/06_analysis2.html")
+file.rename(from = "06_analysis2_files",
+            to = "../results/06_analysis2_files")
+
+quarto_render("07_analysis3.qmd")
+file.rename(from = "07_analysis3.html",
+            to = "../results/07_analysis3.html")
+file.rename(from = "07_analysis3_files",
+            to = "../results/06_analysis3_files")
 
 ```

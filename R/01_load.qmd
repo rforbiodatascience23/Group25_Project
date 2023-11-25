@@ -18,9 +18,6 @@ library("readxl")
 
 data_path <- "~/projects/Group25_Project/data"
 
-if (!dir.exists(data_path)) {
-  stop("The data needs to be loaded first, before running these script. Go to https://dtudk-my.sharepoint.com/:f:/r/personal/s194360_dtu_dk/Documents/R%20for%20BioData?csf=1&web=1&e=FMK1xA and dowload the data folder, then upload it as is.")
-}
 ```
 
 ## Barracoda

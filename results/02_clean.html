@@ -155,14 +155,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(cols_to_keep))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="filtering-significant-subset" class="level3">
-<h3 class="anchored" data-anchor-id="filtering-significant-subset">Filtering significant subset</h3>
-<p>This drastically decreases the data load, from 35000+ observations to ~1000.</p>
+<section id="fixing-some-errors" class="level3">
+<h3 class="anchored" data-anchor-id="fixing-some-errors">Fixing some errors</h3>
+<p>One sample from the BC cohort did not include “BC” in its sample name. This gets added back in here.</p>
+<p>We are not interested in HLA-B type in this project, so any sample related to HLA-B is removed.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>data_clean_b <span class="ot">&lt;-</span> data_clean_b <span class="sc">|&gt;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                <span class="fu">mutate</span>(<span class="at">sample =</span> <span class="fu">ifelse</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"^[A-Z]{2}"</span>, sample), <span class="co"># add 'BC' to sample</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">paste0</span>(<span class="st">"BC"</span>, sample), sample),</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">sample =</span> <span class="fu">str_replace</span>(sample, <span class="st">'-'</span>,<span class="st">''</span>)) <span class="co"># remove dashes</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sample =</span> <span class="fu">ifelse</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"^[A-Z]{2}"</span>, sample),              <span class="co"># add 'BC' to sample</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">paste0</span>(<span class="st">"BC"</span>, sample), sample),</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">sample =</span> <span class="fu">str_replace</span>(sample, <span class="st">'-'</span>,<span class="st">''</span>)) <span class="sc">|&gt;</span>                  <span class="co"># remove dashes</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>HLA<span class="sc">==</span><span class="st">'HLA-B15:01'</span>)                                       <span class="co"># removing HLA-Bs</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="extract-information-from-sample-column" class="level3">
@@ -176,19 +178,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                                         <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"0"</span>),</span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                               <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"1"</span>, <span class="st">"0"</span>)),</span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">.after =</span> sample,) <span class="sc">|&gt;</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate_wider_delim</span>(<span class="st">"sample"</span>,</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>                       <span class="at">delim =</span> <span class="st">"_"</span>,</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"sample_ID"</span>),</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>                       <span class="at">too_many =</span> <span class="st">"drop"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cohort =</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>           <span class="fu">factor</span>(</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>             <span class="fu">case_when</span>(</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>               <span class="fu">grepl</span>(<span class="st">"AP"</span>, sample_ID) <span class="sc">~</span> <span class="st">"AP"</span>,</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>               <span class="fu">grepl</span>(<span class="st">"BS"</span>, sample_ID) <span class="sc">~</span> <span class="st">"BS"</span>,</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>               <span class="fu">grepl</span>(<span class="st">"BC"</span>, sample_ID) <span class="sc">~</span> <span class="st">"BC"</span>,</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>               <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA</span> ),</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>             <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"AP"</span>, <span class="st">"BS"</span>, <span class="st">"BC"</span>)),</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">.after =</span> <span class="st">"sample_ID"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">HLA =</span> <span class="fu">factor</span>(HLA)) <span class="sc">|&gt;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate_wider_delim</span>(<span class="st">"sample"</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">delim =</span> <span class="st">"_"</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>                       <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"sample_ID"</span>),</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>                       <span class="at">too_many =</span> <span class="st">"drop"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cohort =</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>           <span class="fu">factor</span>(</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>             <span class="fu">case_when</span>(</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>               <span class="fu">grepl</span>(<span class="st">"AP"</span>, sample_ID) <span class="sc">~</span> <span class="st">"AP"</span>,</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>               <span class="fu">grepl</span>(<span class="st">"BS"</span>, sample_ID) <span class="sc">~</span> <span class="st">"BS"</span>,</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>               <span class="fu">grepl</span>(<span class="st">"BC"</span>, sample_ID) <span class="sc">~</span> <span class="st">"BC"</span>,</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>               <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA</span> ),</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>             <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"AP"</span>, <span class="st">"BS"</span>, <span class="st">"BC"</span>)),</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>         <span class="at">.after =</span> <span class="st">"sample_ID"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="extract-information-from-protein-column" class="level3">
