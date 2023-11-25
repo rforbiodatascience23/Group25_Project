@@ -21,40 +21,15 @@ library(tidyverse)
 
 ```{r}
 #| message: false
-data_barra <- read_rds(file = '~/projects/Group25_Project/data/02_dat_clean_barracoda.RDS')
-data_flow <- read_rds(file = '~/projects/Group25_Project/data/02_dat_clean_flowjo.RDS')
+data_aug <- read_rds(file = '~/projects/Group25_Project/data/03_dat_aug.RDS')
 ```
 
-### Calculate estimated frequency
+### Add response factor
 
-```{r}
-#| warning: false
-joined_data <- data_barra |>
-               inner_join(data_flow, by=c('sample_ID', 'KIR_blocking'))
-```
-
-```{r}
-count_flow <- data_barra |> 
-              group_by(sample_ID) |> 
-              summarise(total_count = sum(count, na.rm = TRUE)) |> 
-              right_join(joined_data, by = 'sample_ID') |>
-              mutate(count_fraction = (count / total_count)) |> # count fraction
-              mutate(Freq = count_fraction*PE_positive)         # Estimated frequency
-```
-
-### Filter Data for Plotting
-
-```{r}
-paired_data <- count_flow |> 
-              filter(log_fold_change > 0 & p < 0.001) |>
-              group_by(sample_ID, cohort, HLA, peptide) |>
-              filter(any(KIR_blocking == 0) & any(KIR_blocking == 1))
-```
+(Not relevant now, but might need to group by response)
 
 ```{r}
 plot_data <-  paired_data |>
-              mutate(
-                HLA = factor(HLA), # can be removed 
                 response = case_when(
                   log_fold_change > 2 ~ 'High',
                   log_fold_change > 1.5 & log_fold_change <= 2 ~ 'Medium',
@@ -64,47 +39,155 @@ plot_data <-  paired_data |>
              )
 ```
 
-## Plot of logfold change vs epitope binding
+# Plotting paired samples
 
 ```{r}
+# Visualisation constants
 line_color ='#636363' 
 textsize = 10 
 
+# Tibble for plotting
+paired_data <- data_aug |> 
+              filter(log_fold_change > 0 & p < 0.001) |>
+              group_by(sample_ID, cohort, HLA, peptide) |>
+              filter((KIR_blocking == 0) & any(KIR_blocking == 1))
 ```
 
-```{r}
-plot_data |> select(peptide, HLA) |> unique()
-```
+### Log-fold-change vs epitope
 
 ```{r}
 
-ggplot(plot_data, 
+ggplot(paired_data, 
        aes( x = peptide, 
             y = log_fold_change, 
             color = protein))+
-       facet_grid(cohort ~HLA, scales = 'free_x', space='free_x')+ 
-       geom_point(aes(size = Freq), alpha=0.7)+
-       scale_size(range = c(.2, 7)) +
+       facet_grid(cohort ~HLA, 
+                  scales = 'free_x', 
+                  space='free_x')+ 
+       geom_point(aes(size = Freq), 
+                  alpha=0.7)+
+       scale_size(range = c(1, 7)) +
        ylim(0,8)+
        geom_hline(yintercept = 2, 
                   color= line_color,
                   linetype = 3)+
-       geom_hline(yintercept = 0.5, 
-                  color= 'black',
-                  linewidth = 0.2,
-                  linetype = 1)+
        theme_minimal()+
+       theme(axis.text.x = element_text(angle = 45, 
+                                        vjust = 1, 
+                                        hjust = 1),
+             panel.margin.x=unit(0.1, "lines"),
+             panel.margin.y=unit(0.7, "lines"),
+             legend.position = 'bottom',
+             legend.justification = c("right", "top"),
+             panel.grid.major.x = element_blank(),
+             panel.background = element_rect(fill = NA, 
+                                             color = "black"),
+             panel.grid.minor.x = element_line(color = line_color, 
+                                               linetype = 1, 
+                                               size = 0.2))+
+       labs(title='Paired Data - LogFC and epitope', 
+             x="pHLA", 
+             y="Log Fold Change", 
+             color= 'Protein', 
+             size='Est.freq.') 
+```
+
+### Count vs epitope
+
+```{r}
+ggplot(paired_data, 
+       aes( x = peptide, 
+            y = count, 
+            color = protein))+
+       facet_grid(cohort ~HLA, scales = 'free_x', space='free_x')+ 
+       geom_point(aes(size = Freq), alpha=0.7)+
+       scale_size(range = c(2, 7)) +
+       theme_minimal()+
+       ylim(0, 7000)+
        theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
              panel.margin.x=unit(0.1, "lines"),
              panel.margin.y=unit(0.7, "lines"),
-             legend.position = 'bottom', #c(0.5, 0.1),
+             legend.position = 'bottom',
              legend.justification = c("right", "top"),
              panel.grid.major.x = element_blank(),
              panel.background = element_rect(fill = NA, color = "black"),
              panel.grid.minor.x = element_line(color = line_color, linetype = 1, size = 0.2))+
-       labs(title='Bubbles', 
+       labs(title='Paired Data - Count and epitope', 
              x="pHLA (n = 8)", 
-             y="Log Fold Change", 
+             y="Count", 
              color= 'Protein', 
+             size='Est.freq.') 
+```
+
+# All significant samples
+
+### Log-Fold-Change vs epitope
+
+```{r}
+# Tibble for plotting
+log_data <- data_aug |> 
+              filter(log_fold_change > 0 & p < 0.001)
+
+ggplot(log_data, 
+       aes( x = peptide, 
+            y = log_fold_change, 
+            color = KIR_blocking))+
+       facet_grid(cohort ~HLA, 
+                 scales = 'free_x', 
+                 space='free_x')+ 
+       geom_point(aes(size = Freq), 
+                      alpha=0.7)+
+       scale_size(range = c(0.5, 6)) +
+       ylim(0, 10)+
+       geom_hline(yintercept = 2, 
+                  color= line_color,
+                  linetype = 3)+
+       theme_minimal()+
+       theme(axis.text.x = element_blank(),
+             panel.margin.x=unit(0.1, "lines"),
+             panel.margin.y=unit(0.7, "lines"),
+             legend.position = 'bottom',
+             legend.justification = c("right", "top"),
+             panel.grid.major.x = element_blank(),
+             panel.background = element_rect(fill = NA, 
+                                             color = "black"),
+             panel.grid.minor.x = element_line(color = line_color, 
+                                                       linetype = 1, 
+                                                       size = 0.2))+
+       labs(title='Significant Data: LogFold', 
+             x="Unique pHLA", 
+             y="Log Fold Change", 
+             color= 'KIR Blocking', 
+             size='Est.freq.') 
+```
+
+### Count vs epitope
+
+```{r}
+# Tibble for plotting
+signi_data <- data_aug |> 
+              filter(log_fold_change > 2 & p < 0.001)
+
+ggplot(signi_data, 
+       aes( x = peptide, 
+            y = count, 
+            color = KIR_blocking))+
+       facet_grid(cohort ~HLA, scales = 'free_x', space='free_x')+ 
+       geom_point(aes(size = Freq), alpha=0.7)+
+       scale_size(range = c(0.5, 6)) +
+       theme_minimal()+
+       ylim(0, 7000)+
+       theme(axis.text.x = element_blank(),
+             panel.margin.x=unit(0.1, "lines"),
+             panel.margin.y=unit(0.7, "lines"),
+             legend.position = 'bottom',
+             legend.justification = c("right", "top"),
+             panel.grid.major.x = element_blank(),
+             panel.background = element_rect(fill = NA, color = "black"),
+             panel.grid.minor.x = element_line(color = line_color, linetype = 1, size = 0.2))+
+       labs(title='Significant Data counts', 
+             x="Unique pHLA", 
+             y="Count", 
+             color= 'KIR Blocking', 
              size='Est.freq.') 
 ```
