@@ -1,0 +1,69 @@
+---
+title: "Augment"
+format: html
+editor: visual
+---
+
+#### Clean Work Environment
+
+```{r}
+rm(list = ls())
+```
+
+#### Load Packages
+
+```{r}
+#| message: false
+library(tidyverse)
+```
+
+#### Load Data
+
+```{r}
+#| message: false
+data_barra <- read_rds(file = '~/projects/Group25_Project/data/02_dat_clean_barracoda.RDS')
+data_flow <- read_rds(file = '~/projects/Group25_Project/data/02_dat_clean_flowjo.RDS')
+
+data_path <-  '~/projects/Group25_Project/data'
+outfile_f_path <- file.path(data_path, '03_dat_aug.RDS')
+```
+
+### Calculate estimated frequency
+
+```{r}
+#| warning: false
+joined_data <- data_barra |>
+               inner_join(data_flow, by=c('sample_ID', 'KIR_blocking'))
+```
+
+```{r}
+count_flow <- data_barra |> 
+              group_by(sample_ID) |> 
+              summarise(total_count = sum(count, na.rm = TRUE)) |> 
+              right_join(joined_data, by = 'sample_ID') |>
+              mutate(count_fraction = (count / total_count), # count fraction
+                     Freq = count_fraction*PE_positive)
+              
+                
+```
+
+```{r}
+count_flow <- count_flow |> 
+              group_by(sample_ID, cohort, HLA, peptide) |>
+              mutate(paired = case_when(any(KIR_blocking == 0) & any(KIR_blocking == 1) ~ 1,
+                                         TRUE ~0))
+```
+
+```{r}
+count_flow |> group_by(paired) |> count()
+```
+
+```{r}
+count_flow |> filter(p > 0.001 & log_fold_change >2, paired == 1) |> select(sample_ID, peptide, barcode, paired)
+```
+
+### Save to csv
+
+```{r}
+saveRDS(count_flow, file = outfile_f_path)
+```
