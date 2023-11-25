@@ -1,0 +1,76 @@
+---
+title: "Group 25 Presentation"
+authors: "Darya Trubach, Emilie Sofie Engdal, Manon Kirstine Chevalier"
+format:
+  revealjs:
+    theme: solarized
+    smaller: true
+    scrollable: true
+    logo: DTU_logo_Corp_Red_RGB.png
+    footer: "R4BDS"
+editor: visual
+---
+
+# Introduction
+
+::: notes
+Themes to use: dark, moon, night, simple, solarized
+:::
+
+## Biological background
+
+::: notes
+Speaker notes go here.
+:::
+
+# Methods
+
+## Data
+
+::: notes
+Speaker notes go here.
+:::
+
+## Computations
+
+::: notes
+Speaker notes go here.
+:::
+
+# Results
+
+::: notes
+Speaker notes go here.
+:::
+
+## Visualisation #1
+
+::: notes
+Speaker notes go here.
+:::
+
+## Visualisation #2
+
+::: notes
+Speaker notes go here.
+:::
+
+## Visualisation #3
+
+::: notes
+Speaker notes go here.
+:::
+
+# Discussion
+
+Insert some conclusions here
+
+::: notes
+Speaker notes go here.
+:::
+
+# Questions?
+
+::: notes
+Speaker notes go here.
+:::

@@ -1,0 +1,74 @@
+---
+title: "Cleaning Data"
+format: html
+editor: visual
+---
+
+### Prepping
+
+Clearing the environment, loading the libraries.
+
+```{r}
+#| message: false
+
+rm(list = ls())
+
+library(quarto)
+
+```
+
+### Deleting the previously generated files - NOT DONE YET
+
+The data files created in `01_load` and `02_clean`.
+
+The `.html` files generated from all R-scripts.
+
+```{r}
+
+```
+
+### Running all the .qmd files
+
+```{r}
+#| message: false
+#| warning: false
+#| results: hide
+
+quarto_render("01_load.qmd")
+file.rename(from = "01_load.html",
+            to = "../results/01_load.html")
+file.rename(from = "01_load_files",
+            to = "../results/01_load_files")
+
+quarto_render("02_clean.qmd")
+file.rename(from = "02_clean.html",
+            to = "../results/02_clean.html")
+file.rename(from = "02_clean_files",
+            to = "../results/02_clean_files")
+
+# quarto_render("03_describe.qmd")
+# file.rename(from = "03_describe.html",
+#             to = "../results/03_describe.html")
+# file.rename(from = "03_describe_files",
+#             to = "../results/03_describe_files")
+# 
+# quarto_render("04_augment.qmd")
+# file.rename(from = "04_augment.html",
+#             to = "../results/04_augment.html")
+# file.rename(from = "04_augment_files",
+#             to = "../results/04_augment_files")
+# 
+# quarto_render("05_analysis1.qmd")
+# file.rename(from = "05_analysis1.html",
+#             to = "../results/05_analysis1.html")
+# file.rename(from = "05_analysis1_files",
+#             to = "../results/05_analysis1_files")
+# 
+# quarto_render("06_analysis2.qmd")
+# file.rename(from = "06_analysis2.html",
+#             to = "../results/06_analysis2.html")
+# quarto_render("06_analysis2.qmd")
+# file.rename(from = "06_analysis2_files",
+#             to = "../results/06_analysis2_files")
+
+```
