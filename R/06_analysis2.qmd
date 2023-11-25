@@ -1,0 +1,51 @@
+---
+title: "Cleaning Data"
+format: html
+editor: visual
+---
+
+## Prepping
+
+Clearing the environment, loading the libraries and saving the path to the data folder.
+
+```{r}
+#| message: false
+rm(list = ls())
+
+library(tidyverse)
+library(stringr)
+library(dplyr)
+
+data_path <- "~/projects/Group25_Project/data"
+```
+
+### Loading the data
+
+```{r}
+#| message: false
+
+data_clean_b_path <- file.path(data_path, "02_dat_clean_barracoda.RDS")
+data_clean_b <- read_rds(file = data_clean_b_path)
+
+```
+
+### Reducing to only paired data
+
+```{r}
+paired_data <- data_clean_b |> 
+  filter(p < 0.001 & log_fold_change > 2) |>
+  group_by(sample_ID, cohort, HLA, peptide) |>
+  filter(any(KIR_blocking == 0) & any(KIR_blocking == 1))
+
+paired_data |> 
+  ggplot(aes(x = peptide,
+             y = count,
+             color = KIR_blocking,
+             shape = cohort)) +
+  geom_point() +
+  facet_grid(. ~ HLA,
+             scales = "free_x",
+             space = "free_x") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+  
+```
