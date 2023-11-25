@@ -93,8 +93,8 @@ protein_stack
 ```{r}
 #| message: false
 # Prepare relevant data
-data_counts <-  paired |> 
-                count(cohort, sample_ID, KIR_blocking)
+data_counts <-  data_p |> 
+  count(cohort, sample_ID, KIR_blocking)
 
 # visual settings
 color_1 <- "#69b3a2"
@@ -149,8 +149,7 @@ test
 
 ggplot(test, 
        aes(x = Staining, 
-           y = Fraction,
-           color = sample_ID)) +
+           y = Fraction)) +
       facet_wrap(~cohort, scales='free_y')+
       geom_boxplot(width = boxplot_width,
                    alpha = 0.2)+
@@ -184,12 +183,14 @@ unpaired <- data_p  |>
 ggplot(unpaired, 
        aes(x = Staining, 
            y = Fraction)) +
-      facet_wrap(~cohort, scales='free_y')+
+      facet_wrap(~cohort,
+                 scales='free_y')+
       geom_boxplot(width = boxplot_width,
                    alpha = 0.2)+
       geom_jitter(size=dot_size, 
                   shape=1, ) +
-      scale_fill_manual(values=c(color_1, color_2)) +
+      scale_fill_manual(values=c(color_1,
+                                 color_2)) +
       theme_minimal(base_size = text_size)+
       theme(legend.position = 'bottom')+
     	labs( x=element_blank(),
