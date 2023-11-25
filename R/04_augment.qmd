@@ -40,12 +40,13 @@ Then the estimated frequency is calculated as such: $Est.Frequency = (count_{pMH
 ```{r}
 
 joined_data <- data_barra |>
-  inner_join(data_flow, by=c('sample_ID', 'KIR_blocking')) |>
-  group_by(sample_ID) |> 
-  mutate(total_count = (sum(count, na.rm = TRUE)),
-         count_fraction = (count / total_count), # count fraction
-         est_frequency = count_fraction*PE_positive) |>
-  ungroup()
+              inner_join(data_flow, 
+                         by=c('sample_ID', 'KIR_blocking')) |>
+              group_by(sample_ID) |> 
+              mutate(total_count = (sum(count, na.rm = TRUE)),
+                     count_fraction = (count / total_count), # count fraction
+                     est_frequency = count_fraction*PE_positive) |>
+              ungroup()
                 
 ```
 
@@ -77,19 +78,17 @@ This means that the same pMHC multimer has been tested in both experiments, i.e.
 
 joined_data <- joined_data |> 
   group_by(sample_ID, cohort, HLA, peptide) |>
-  mutate(paired =
-           factor(
-             ifelse((all(c(0, 1) %in% KIR_blocking)), 1, 0)),
+  mutate(paired = factor(
+                  ifelse((all(c(0, 1) %in% KIR_blocking)), 1, 0)),
          .after = cohort) |>
   ungroup()
 
 sig_data <- sig_data |> 
-  group_by(sample_ID, cohort, HLA, peptide) |>
-  mutate(paired =
-           factor(
-             ifelse((all(c(0, 1) %in% KIR_blocking)), 1, 0)),
-         .after = cohort) |>
-  ungroup()
+            group_by(sample_ID, cohort, HLA, peptide) |>
+            mutate(paired = factor(
+                            ifelse((all(c(0, 1) %in% KIR_blocking)), 1, 0)),
+                   .after = cohort) |>
+            ungroup()
 
 # just for observation, not saved
 paired_data <- sig_data |> 
