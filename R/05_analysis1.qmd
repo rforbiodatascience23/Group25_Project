@@ -30,7 +30,7 @@ data_flow <- read_rds(file = '~/projects/Group25_Project/data/02_dat_clean_flowj
 ```{r}
 #| warning: false
 joined_data <- data_barra |>
-               inner_join(data_flow, by='sample_ID')
+               inner_join(data_flow, by=c('sample_ID', 'KIR_blocking'))
 ```
 
 ```{r}
@@ -43,15 +43,24 @@ count_flow <- data_barra |>
 ```{r}
 count_flow <- count_flow |>
               mutate(count_fraction = (count / total_count)) |> # count fraction
-              mutate(Freq = count_fraction*PE_positive)       # Estimated frequency
+              mutate(Freq = count_fraction*PE_positive)         # Estimated frequency
 ```
 
-### Filter for significant subset
+### Filter Data for Plotting
 
 ```{r}
-signi_data <- count_flow |>
-              filter(p < 0.001 & log_fold_change > 2)|>
-              arrange(desc(log_fold_change))
+plot_data <-  count_flow |>
+              filter(KIR_blocking == 0) |>
+              filter(p < 0.001 & log_fold_change > 0) |> #p < 0.01 & log_fold_change > 0
+              mutate(
+                HLA = factor(HLA), # can be removed 
+                response = case_when(
+                  log_fold_change > 2 ~ 'High',
+                  log_fold_change > 1.5 & log_fold_change <= 2 ~ 'Medium',
+                  log_fold_change > 1 & log_fold_change <= 1.5 ~ 'Low',
+                  TRUE ~ 'No Response'
+                )
+             )
 ```
 
 ## Plot of logfold change vs epitope binding
@@ -63,11 +72,7 @@ textsize = 10
 ```
 
 ```{r}
-
-plot_data <- count_flow |>
-             mutate(HLA = factor(HLA)) |>
-             filter(log_fold_change > 0 & p < 0.001) #|>
-             #filter(sample_ID == 'AP0201')
+plot_data |> select(peptide, HLA) |> unique()
 ```
 
 ```{r}
@@ -76,16 +81,26 @@ ggplot(plot_data,
        aes( x = peptide, 
             y = log_fold_change, 
             color = protein))+
-       facet_grid(~HLA)+
-       geom_point(aes(size = Freq))+
+       facet_grid(cohort ~HLA)+ 
+       geom_point(aes(size = Freq), alpha=0.7)+
+       scale_size(range = c(0.5, 10)) +
        geom_hline(yintercept = 2, 
-                  color= line_color )+
-       theme_gray()+
+                  color= line_color,
+                  linetype = 3)+
+       geom_hline(yintercept = 0.5, 
+                  color= 'black',
+                  linewidth = 0.2,
+                  linetype = 1)+
+       theme_minimal()+
        theme(axis.text.x = element_blank(), 
-             panel.margin.x=unit(0, "lines"),
-             legend.position = 'bottom' )+
+             panel.margin.x=unit(0.1, "lines"),
+             legend.position = 'bottom', #c(0.5, -0.5),
+             legend.direction = "horizontal",
+             legend.justification = "center",
+             panel.grid.major.x = element_blank(),
+             panel.grid.minor.x = element_line(color = line_color, linetype = 1, size = 0.2))+
        labs(title='Bubbles', 
-             x="Peptide", 
+             x="pMHC (n = 314)", 
              y="LogFC", 
              color= 'Protein', 
              size='Est.freq.') 
