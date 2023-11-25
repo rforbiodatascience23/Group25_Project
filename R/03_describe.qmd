@@ -13,7 +13,6 @@ rm(list = ls())
 
 library(tidyverse)
 library("table1")
-library(reshape2) 
 ```
 
 ### Load Data
@@ -60,18 +59,18 @@ summary_table_f
 
 # Descriptive Plots
 
+```{r}
+
+```
+
 ### Barracoda
 
 ```{r}
 #| message: false
 # Prepare relevant data
-data_counts <-  data_b |>
-                count(cohort, sample_ID) |> 
-                left_join( data_b |> 
-                           distinct(sample_ID,
-                                     .keep_all = TRUE) |>
-                           select(sample_ID, KIR_blocking), 
-                           by = "sample_ID")
+data_counts <-  data_b |> 
+                filter(p < 0.001 & log_fold_change > 2) |> 
+                count(cohort, sample_ID, KIR_blocking)
 
 # visual settings
 color_1 <- "#69b3a2"
@@ -93,13 +92,13 @@ ggplot(data_counts,
                    alpha = 0.2)+
       scale_fill_manual(values=c(color_1, color_2)) +
       theme_minimal(base_size = text_size)+
-      theme(legend.position = 'bottom')+
-    	labs( x='Patient Cohort',
+      theme(legend.position = 'right')+
+    	labs( x='Cohort',
         		y='Count (n)',
-        		title = 'Write a clever observation here',
+        		title = 'Total Significante Respons Count per Sample',
         		subtitle ='2023',
         	  fill = 'KIR Blocking',
-        		caption = 'data from xx')
+        		caption = 'S. K. Saini et al., Sci. Immunol. 10.1126/sciimmunol.abf7550 (2021)')
 
 ggsave("../results/Boxplot_Nb_Responses.png")
 ```
