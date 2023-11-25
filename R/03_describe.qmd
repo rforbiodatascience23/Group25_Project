@@ -13,6 +13,7 @@ rm(list = ls())
 
 library(tidyverse)
 library("table1")
+library(reshape2) 
 ```
 
 ### Load Data
@@ -85,7 +86,7 @@ ggplot(data_counts,
            y = n, 
            fill = KIR_blocking)) + 
       geom_jitter(size=dot_size, 
-                  shape=1, ) +
+                  shape=1) +
       geom_violin(width = boxplot_width,
                    alpha = 0.8)+
       geom_boxplot(width = boxplot_width,
@@ -109,26 +110,72 @@ ggsave("../results/Boxplot_Nb_Responses.png")
 
 ```{r}
 plot_data <- data_b |>
-             inner_join(data_f, by=c(sample_ID, KIR_blocking))
+             inner_join(data_f, by=c('sample_ID', 'KIR_blocking'))|> 
+             mutate(APC_positive = APC_positive*100,     
+                           DP_positive = DP_positive*100,   
+                           PE_positive = PE_positive*100) 
+```
+
+```{r}
+test <- pivot_longer(plot_data, 
+                     cols = c('PE_positive', 'APC_positive'),
+                     names_to = 'Staining', 
+                     values_to = 'Fraction') |>
+        filter(p < 0.001 & log_fold_change > 2) |>
+        select(Fraction, Staining, sample_ID, cohort) |>
+        unique()
+test
 ```
 
 ```{r}
 
-ggplot(data_f, 
-       aes(x = cohort, 
-           y = PE_positive, 
-           fill = KIR_blocking)) + 
-      geom_violin(width = boxplot_width,
-                   alpha = 0.8)+
+ggplot(test, 
+       aes(x = Staining, 
+           y = Fraction)) +
+      facet_wrap(~cohort, scales='free_y')+
       geom_boxplot(width = boxplot_width,
                    alpha = 0.2)+
+      geom_jitter(size=dot_size, 
+                  shape=1, ) +
       scale_fill_manual(values=c(color_1, color_2)) +
       theme_minimal(base_size = text_size)+
       theme(legend.position = 'bottom')+
-    	labs( x='Patient Cohort',
-        		y='Count (n)',
+    	labs( x=element_blank(),
+        		y='% multimer CD8+ T-cells',
         		title = 'Write a clever observation here',
         		subtitle ='2023',
         	  fill = 'KIR Blocking',
+        		caption = 'data from xx')
+```
+
+## Paired samples only
+
+```{r}
+plot_data2 <- pivot_longer(plot_data, 
+                     cols = c('PE_positive', 'APC_positive'),
+                     names_to = 'Staining', 
+                     values_to = 'Fraction') |>
+            filter(p < 0.001 & log_fold_change > 2,
+                   (KIR_blocking == 0) & any(KIR_blocking == 1)) |>
+            select(Fraction, Staining, sample_ID, cohort) |>
+            unique()
+
+ggplot(plot_data2, 
+       aes(x = Staining, 
+           y = Fraction, 
+           )) +
+      facet_wrap(~cohort, scales='free_y')+
+      geom_boxplot(width = boxplot_width,
+                   alpha = 0.2)+
+      geom_jitter(size=dot_size, 
+                  shape=1) +
+      #scale_fill_manual(values=c(color_1, color_2)) +
+      theme_minimal(base_size = text_size)+
+      theme(legend.position = 'bottom')+
+    	labs( x=element_blank(),
+        		y='% multimer CD8+ T-cells',
+        		title = 'Write a clever observation here',
+        		subtitle ='2023',
+        	  fill = 'Sample',
         		caption = 'data from xx')
 ```
