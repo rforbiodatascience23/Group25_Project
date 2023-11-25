@@ -4,20 +4,19 @@ format: html
 editor: visual
 ---
 
-#### Clean Work Environment
+### Prepping
 
-```{r}
-rm(list = ls())
-```
-
-#### Load Packages
+Clean Work Environment and Load Packages
 
 ```{r}
 #| message: false
+
+rm(list = ls())
 library(tidyverse)
+
 ```
 
-#### Load Data
+### Load Data
 
 ```{r}
 #| message: false
@@ -26,10 +25,13 @@ data_path <-  '~/projects/Group25_Project/data'
 
 data_barra <- read_rds(file = file.path(data_path, '02_dat_clean_barracoda.RDS'))
 data_flow <- read_rds(file = file.path(data_path, '02_dat_clean_flowjo.RDS'))
-outfile_f_path <- file.path(data_path, '03_dat_aug.RDS')
+
+outfile_joined_path <- file.path(data_path, '03_dat_aug_joined.RDS')
+outfile_sig_pairing_path <- file.path(data_path, '03_dat_aug_sig_pairing.RDS')
+
 ```
 
-### Join Barracoda and Flowjo
+### Join Barracoda and Flowjo data
 
 Barracoda and flowjo data are joined into one tibble. They do not overlap perfectly, therfore the innerjoin causes some dataloss from both sources.
 
@@ -42,8 +44,27 @@ joined_data <- data_barra |>
   group_by(sample_ID) |> 
   mutate(total_count = (sum(count, na.rm = TRUE)),
          count_fraction = (count / total_count), # count fraction
-         est_frequency = count_fraction*PE_positive)
+         est_frequency = count_fraction*PE_positive) |>
+  ungroup()
                 
+```
+
+### Filtering for significant data
+
+We decided that the only significant data was data with a p-value \< 0.001 and a log fold change \> 2.
+
+**NB:**
+
+-   if we filter the significant before the pairing we get 22 significant observations, meaning 11 pairs
+
+-   if we filter the significant after the pairing we get 41 significant observations, some of which are no longer in pairs
+
+This is why the filtering happens at this step and not later.
+
+```{r}
+
+sig_data <- joined_data |> 
+  filter(p < 0.001 & log_fold_change > 2)
 ```
 
 ### **Adding a "paired" column**
@@ -53,6 +74,7 @@ This column is equal to 1 when there is another row with the same sample_ID, coh
 This means that the same pMHC multimer has been tested in both experiments, i.e. we have paired data.
 
 ```{r}
+
 joined_data <- joined_data |> 
   group_by(sample_ID, cohort, HLA, peptide) |>
   mutate(paired =
@@ -60,10 +82,41 @@ joined_data <- joined_data |>
              ifelse((all(c(0, 1) %in% KIR_blocking)), 1, 0)),
          .after = cohort) |>
   ungroup()
+
+sig_data <- sig_data |> 
+  group_by(sample_ID, cohort, HLA, peptide) |>
+  mutate(paired =
+           factor(
+             ifelse((all(c(0, 1) %in% KIR_blocking)), 1, 0)),
+         .after = cohort) |>
+  ungroup()
+
+# just for observation, not saved
+paired_data <- sig_data |> 
+  filter(paired == 1)
+
 ```
 
-### Save to csv
+We go from 31796 obs to 22 obs (meaning 11 pairs)
+
+Barracoda: 31796 obs (+ 56 Flowjo obs)
+
+Joined: 22819 obs
+
+Significant: 542 obs
+
+Paired: 22 obs
+
+### **S**ave to csv
 
 ```{r}
-saveRDS(joined_data, file = outfile_f_path)
+
+# the joined data, not filtered for significance, but pairs are labelled
+saveRDS(joined_data, file = outfile_joined_path)
+
+# only significant data, pairs are labelled
+saveRDS(sig_data, file = outfile_sig_pairing_path)
+
+
+
 ```
