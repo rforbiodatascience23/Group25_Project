@@ -29,14 +29,12 @@ data_aug <- read_rds(file = '~/projects/Group25_Project/data/03_dat_aug.RDS')
 (Not relevant now, but might need to group by response)
 
 ```{r}
-plot_data <-  paired_data |>
-                response = case_when(
-                  log_fold_change > 2 ~ 'High',
-                  log_fold_change > 1.5 & log_fold_change <= 2 ~ 'Medium',
-                  log_fold_change > 1 & log_fold_change <= 1.5 ~ 'Low',
-                  TRUE ~ 'No Response'
-                )
-             )
+plot_data <-  data_aug |>
+  mutate(response = case_when(
+    log_fold_change > 2 ~ 'High',
+    log_fold_change > 1.5 & log_fold_change <= 2 ~ 'Medium',
+    log_fold_change > 1 & log_fold_change <= 1.5 ~ 'Low',
+    TRUE ~ 'No Response'))
 ```
 
 # Plotting paired samples
