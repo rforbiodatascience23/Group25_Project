@@ -41,9 +41,25 @@ count_flow <- data_barra |>
               group_by(sample_ID) |> 
               summarise(total_count = sum(count, na.rm = TRUE)) |> 
               right_join(joined_data, by = 'sample_ID') |>
-              mutate(count_fraction = (count / total_count)) |>    # count fraction
-              mutate(Freq = count_fraction*PE_positive)            # Estimated frequency
+              mutate(count_fraction = (count / total_count), # count fraction
+                     Freq = count_fraction*PE_positive)
+              
+                
+```
 
+```{r}
+count_flow <- count_flow |> 
+              group_by(sample_ID, cohort, HLA, peptide) |>
+              mutate(paired = case_when(any(KIR_blocking == 0) & any(KIR_blocking == 1) ~ 1,
+                                         TRUE ~0))
+```
+
+```{r}
+count_flow |> group_by(paired) |> count()
+```
+
+```{r}
+count_flow |> filter(p > 0.001 & log_fold_change >2, paired == 1) |> select(sample_ID, peptide, barcode, paired)
 ```
 
 ### Save to csv
