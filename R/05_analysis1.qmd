@@ -37,11 +37,7 @@ joined_data <- data_barra |>
 count_flow <- data_barra |> 
               group_by(sample_ID) |> 
               summarise(total_count = sum(count, na.rm = TRUE)) |> 
-              right_join(joined_data, by = 'sample_ID')
-```
-
-```{r}
-count_flow <- count_flow |>
+              right_join(joined_data, by = 'sample_ID') |>
               mutate(count_fraction = (count / total_count)) |> # count fraction
               mutate(Freq = count_fraction*PE_positive)         # Estimated frequency
 ```
@@ -49,9 +45,14 @@ count_flow <- count_flow |>
 ### Filter Data for Plotting
 
 ```{r}
-plot_data <-  count_flow |>
-              filter(KIR_blocking == 0) |>
-              filter(p < 0.001 & log_fold_change > 0) |> #p < 0.01 & log_fold_change > 0
+paired_data <- count_flow |> 
+              filter(log_fold_change > 0 & p < 0.001) |>
+              group_by(sample_ID, cohort, HLA, peptide) |>
+              filter(any(KIR_blocking == 0) & any(KIR_blocking == 1))
+```
+
+```{r}
+plot_data <-  paired_data |>
               mutate(
                 HLA = factor(HLA), # can be removed 
                 response = case_when(
@@ -81,9 +82,10 @@ ggplot(plot_data,
        aes( x = peptide, 
             y = log_fold_change, 
             color = protein))+
-       facet_grid(cohort ~HLA)+ 
+       facet_grid(cohort ~HLA, scales = 'free_x', space='free_x')+ 
        geom_point(aes(size = Freq), alpha=0.7)+
-       scale_size(range = c(0.5, 10)) +
+       scale_size(range = c(.2, 7)) +
+       ylim(0,8)+
        geom_hline(yintercept = 2, 
                   color= line_color,
                   linetype = 3)+
@@ -92,16 +94,17 @@ ggplot(plot_data,
                   linewidth = 0.2,
                   linetype = 1)+
        theme_minimal()+
-       theme(axis.text.x = element_blank(), 
+       theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
              panel.margin.x=unit(0.1, "lines"),
-             legend.position = 'bottom', #c(0.5, -0.5),
-             legend.direction = "horizontal",
-             legend.justification = "center",
+             panel.margin.y=unit(0.7, "lines"),
+             legend.position = 'bottom', #c(0.5, 0.1),
+             legend.justification = c("right", "top"),
              panel.grid.major.x = element_blank(),
+             panel.background = element_rect(fill = NA, color = "black"),
              panel.grid.minor.x = element_line(color = line_color, linetype = 1, size = 0.2))+
        labs(title='Bubbles', 
-             x="pMHC (n = 314)", 
-             y="LogFC", 
+             x="pHLA (n = 8)", 
+             y="Log Fold Change", 
              color= 'Protein', 
              size='Est.freq.') 
 ```
