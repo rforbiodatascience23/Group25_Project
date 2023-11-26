@@ -130,7 +130,7 @@ paired_data |>
         panel.grid.minor.x = element_line(color = line_color, 
                                           linetype = 1, 
                                           size = 0.2)) +
-  labs(title='Paired Data - Count and epitope', 
+  labs(title='Distribution of peptide responses across HLA-C allotypes', 
        x="pHLA multimer", 
        y="Count (n)", 
        color= 'KIR blocking', 
@@ -176,7 +176,7 @@ log_data |>
         panel.grid.minor.x = element_line(color = line_color, 
                                           linetype = 1, 
                                           size = 0.2)) + 
-  labs(title='Significant Data: LogFold', 
+  labs(title='Peptide specific downregulation of responses as a result of KIR blocking', 
        x="Unique pHLA", 
        y="Log Fold Change", 
        color= 'KIR Blocking', 

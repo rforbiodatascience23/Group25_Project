@@ -179,8 +179,8 @@ plot_data |>
                                          hjust = 1))+
       	labs( x=element_blank(),
           		y='% multimer CD8+ T-cells',
-          		title = 'Blocking of KIR receptor removes false positive responses',
-          		subtitle ='Limited availability of paired samples from flow cytometry',
+          		title = 'Effect of KIR blocking on pMHC binding in CD8+ T-cells',
+          		subtitle ='False positive responses of pMHC due to KIR binding',
           	  color = 'Sample ID',
           		caption = 'Data: S. K. Saini et. al 2021')
 
@@ -227,8 +227,7 @@ ggplot(unpaired,
                                         size = 10))+
     	labs( x=element_blank(),
         		y='% multimer CD8+ T-cells',
-        		title = 'KIR blocking ',
-        		subtitle ='Decrease in false positive responses across cohorts',
+        		title = 'Evaluating the impact of KIR blocking in the total cohorts ',
         	  fill = 'KIR Blocking',
         		caption = 'Data: S. K. Saini et. al 2021')
 
