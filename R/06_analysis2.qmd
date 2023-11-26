@@ -180,4 +180,7 @@ data_joined |>
                                                     r = 0,
                                                     b = 0,
                                                     l = 0)))
+
+ggsave("../results/Volcano_all.png", 
+       bg = 'white')
 ```
