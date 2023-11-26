@@ -87,7 +87,7 @@ protein_stack <- data_b |>
       	fill = 'Protein',
       	caption = 'S. K. Saini et al., Sci. Immunol. 10.1126/sciimmunol.abf7550 (2021)')
 
-protein_stack
+ggsave("../results/protein_stack.png")
 ```
 
 ### Barracoda
