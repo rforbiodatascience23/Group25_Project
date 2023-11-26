@@ -1,14 +1,20 @@
-# 22100: R for BioData Science 2023
+# 22100: R for BioData Science
 
-## Group 25
-
-------------------------------------------------------------------------
-
-**Emilie Sofie Engdal, Manon Kirstine Chevalier and Dasha Trubach**
+### Fall 2023 - Group 25
 
 ------------------------------------------------------------------------
 
-# Overview
+## Project Contributors
+
+Emilie Sofie Engdal, s194360, emilieengdal
+
+Manon Kirstine Chevalier, s215112, manchedtudk
+
+Dasha Trubach, dartru, dartrudtu
+
+------------------------------------------------------------------------
+
+## Overview
 
 This analysis aims to uncover insights into HLA-C-restricted CD8 T cell responses, contributing to our understanding of immune responses in the context of SARS-CoV-2.
 
@@ -18,18 +24,24 @@ This analysis aims to uncover insights into HLA-C-restricted CD8 T cell response
 
 -   We examine three distinct groups: healthy donors (BC), COVID-19 patients (AP), and health-care workers (BS) for their CD8 T cell response to SARS-CoV-2.
 
+------------------------------------------------------------------------
+
 ## Data Availability
 
-The data is internal research data from The Danish University of Technology, Department of Health Tech created by Andreas Kongsgaard. It may be forwarded by the authors upon relevant requests.
+The data consists of internal research data from The Danish University of Technology, Department of Health Tech created by Andreas Kongsgaard. If granted access by the project contributors, it can be retrieved from: https://dtudk-my.sharepoint.com/:f:/r/personal/s194360_dtu_dk/Documents/R%20for%20BioData?csf=1&web=1&e=FMK1xA 
+
+------------------------------------------------------------------------
 
 ## Dependencies
 
-The following packages are required
+The following packages are required:
 
 -   ggplot2
 
 -   dplyr
 
 -   stringr
+
+-   RColorBrewer
 
 ## 
