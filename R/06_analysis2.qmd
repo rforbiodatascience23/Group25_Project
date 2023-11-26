@@ -1,110 +1,111 @@
 ---
-title: "Cleaning Data"
+title: "Group 25: Project Report 2023"
 format: html
 editor: visual
 ---
 
-## Prepping
+# 06_analysis2
 
-Clearing the environment, loading the libraries and saving the path to the data folder.
+### Prepping
+
+Clean Work Environment and Load Packages
 
 ```{r}
 #| message: false
+
 rm(list = ls())
-
 library(tidyverse)
-library(stringr)
-library(dplyr)
-#library(ggbeeswarm)
 
-data_path <- "~/projects/Group25_Project/data"
 ```
 
-### Loading the data
+### Loading data
 
 ```{r}
 #| message: false
 
-data_aug_path <- file.path(data_path, "03_dat_aug_sig_pairing.RDS")
-data_aug <- read_rds(file = data_aug_path)
+data_path <-  '~/projects/Group25_Project/data'
+
+data_joined <- read_rds(file = file.path(data_path, '03_dat_aug_joined.RDS'))
+data_sig_pairing <- read_rds(file = file.path(data_path, '03_dat_aug_sig_pairing.RDS'))
 
 ```
 
-### Reducing to only paired data
+### Defining some settings once
 
 ```{r}
-paired_data <- data_aug |>
-  filter(paired == 1)
+
+# alpha, size and colors for volcano plots
+a <- 0.25                                # alpha
+s <- 0.005                               # size
+volcano_colors <- c("firebrick3",        # down
+                    "gray50",            # insignificant
+                    "dodgerblue3")       # up
 
 ```
 
-### **Plotting count for each paired, significant peptide**
+I am unsure which volcano plots we need but here is at least some scaffolding
+
+### Volcano plots, grouped by cohort and HLA
 
 ```{r}
 
-paired_data |> 
-  ggplot(aes(x = peptide,
-             y = count,
-             color = KIR_blocking,
-             shape = cohort)) +
-  geom_point() +
-  facet_grid(. ~ HLA,
-             scales = "free_x",
-             space = "free_x") +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
-  
+data_joined |>
+  mutate(
+    expression = case_when(log_fold_change > 2 & p < 0.001 ~ "Up",
+                           log_fold_change < -2 & p <= 0.001 ~ "Down",
+                           TRUE ~ "Insignificant")) |>
+  group_by(HLA, cohort) |>
+  ggplot(aes(x = log_fold_change,
+             y = - log10(p),
+             color = expression)) +
+  theme_bw() +
+  geom_vline(xintercept = 2,
+             linetype = "dashed",
+             colour = "grey") +
+  geom_vline(xintercept = -2,
+             linetype = "dashed",
+             colour = "grey") +
+  geom_vline(xintercept = 0,
+             linetype = "solid",
+             colour = "grey") +
+  geom_hline(yintercept = -log10(0.001),
+             linetype = "dashed",
+             colour = "grey") +
+  geom_point(alpha = a, size = s) +
+  labs(x = "Fold change (log2)",
+       y = "P-value (-log10)") +
+  scale_color_manual(values = volcano_colors) +
+  facet_grid(HLA ~ cohort)
 
 ```
 
-### **Plotting count fraction for each paired, significant peptide**
+### Volcano plot for all data
 
 ```{r}
-
-paired_data |> 
-  ggplot(aes(x = peptide,
-             y = count_fraction,
-             color = KIR_blocking,
-             shape = cohort)) +
-  geom_point() +
-  facet_grid(. ~ HLA,
-             scales = "free_x",
-             space = "free_x") +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
-  
-
-```
-
-### Plotting count fraction for each cohort, in the paired dataset
-
-```{r}
-
-paired_data |> 
-  ungroup() |>
-  ggplot(aes(x = KIR_blocking,
-             y = count_fraction,
-             color = sample_ID,
-             shape = HLA)) +
-  geom_point(size = 2.5) +
-  facet_grid(. ~ cohort,
-             scales = "free_x",
-             space = "free_x")
-
-```
-
-### 
-
-Plotting count fraction for each cohort, all data
-
-```{r}
-
-data_aug |> 
-  ungroup() |>
-  ggplot(aes(x = KIR_blocking,
-             y = count_fraction)) +
-  geom_point(size = 2.5,
-             position = position_dodge2(w = 0.5)) +
-  facet_grid( HLA ~ cohort,
-             scales = "free_x",
-             space = "free_x")
+data_joined |>
+  mutate(
+    expression = case_when(log_fold_change > 2 & p < 0.001 ~ "Up",
+                           log_fold_change < -2 & p <= 0.001 ~ "Down",
+                           TRUE ~ "Insignificant")) |>
+  ggplot(aes(x = log_fold_change,
+             y = - log10(p),
+             color = expression)) +
+  theme_bw() +
+  geom_vline(xintercept = 2,
+             linetype = "dashed",
+             colour = "grey") +
+  geom_vline(xintercept = -2,
+             linetype = "dashed",
+             colour = "grey") +
+  geom_vline(xintercept = 0,
+             linetype = "solid",
+             colour = "grey") +
+  geom_hline(yintercept = -log10(0.001),
+             linetype = "dashed",
+             colour = "grey") +
+  geom_point(alpha = a, size = s) +
+  scale_color_manual(values = volcano_colors) +
+  labs(x = "Fold change (log2)",
+       y = "P-value (-log10)") 
 
 ```

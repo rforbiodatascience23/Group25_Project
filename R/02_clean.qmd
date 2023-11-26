@@ -1,8 +1,10 @@
 ---
-title: "Cleaning Data"
+title: "02_clean"
 format: html
 editor: visual
 ---
+
+# 02_clean
 
 ## Prepping
 
