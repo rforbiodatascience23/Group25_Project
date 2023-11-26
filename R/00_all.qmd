@@ -1,0 +1,62 @@
+---
+title: "00_all.qmd"
+format: html
+editor: visual
+---
+
+# 0_all
+
+### Prepping
+
+Clearing the environment, loading the libraries, setting some paths, and checking that the data has been uploaded.
+
+```{r}
+#| message: false
+
+rm(list = ls())
+
+library(quarto)
+
+results_path <- "~/projects/Group25_Project/results"
+data_path <- "~/projects/Group25_Project/data"
+
+if (!dir.exists(data_path)) {
+  stop("The data needs to be loaded first, before running this script. Go to https://dtudk-my.sharepoint.com/:f:/r/personal/s194360_dtu_dk/Documents/R%20for%20BioData?csf=1&web=1&e=FMK1xA and dowload the data folder, then upload it as is.")
+}
+
+```
+
+### Deleting the previously generated files
+
+The files in data and the files in results should be deleted before starting
+
+```{r}
+#| message: false
+#| warning: false
+
+# emptying results folder, including subdirectories
+file.remove(list.files(results_path, full.names = TRUE, recursive = TRUE))
+unlink(results_path, recursive = TRUE, force = TRUE)
+
+# emptying results folder, keeping subdirectories
+file.remove(list.files(data_path, full.names = TRUE, recursive = FALSE))
+
+if (!dir.exists(results_path)) {
+dir.create(results_path)
+}
+
+```
+
+### Including all .qmd files
+
+{{< include 01_load.qmd >}}
+
+{{< include 02_clean.qmd >}}
+
+{{< include 03_augment.qmd >}}
+
+{{< include 04_describe.qmd >}}
+
+{{< include 05_analysis1.qmd >}}
+
+{{< include 06_analysis2.qmd >}}

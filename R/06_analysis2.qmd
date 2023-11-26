@@ -1,0 +1,101 @@
+---
+title: "Group 25: Project Report 2023"
+format: html
+editor: visual
+---
+
+# 06_analysis2
+
+### Prepping
+
+Clean Work Environment and Load Packages
+
+```{r}
+#| message: false
+rm(list = ls())
+library(tidyverse)
+```
+
+### Loading data
+
+```{r}
+#| message: false
+data_path <-  '~/projects/Group25_Project/data'
+data_joined <- read_rds(file = file.path(data_path, '03_dat_aug_joined.RDS'))
+data_sig_pairing <- read_rds(file = file.path(data_path, '03_dat_aug_sig_pairing.RDS'))
+```
+
+### Defining some settings once
+
+```{r}
+# alpha, size and colors for volcano plots
+a <- 0.25                                # alpha
+s <- 0.005                               # size
+volcano_colors <- c("firebrick3",        # down
+                    "gray50",            # insignificant
+                    "dodgerblue3")       # up
+```
+
+I am unsure which volcano plots we need but here is at least some scaffolding
+
+### Volcano plots, grouped by cohort and HLA
+
+```{r}
+data_joined |>
+  mutate(
+    expression = case_when(log_fold_change > 2 & p < 0.001 ~ "Up",
+                           log_fold_change < -2 & p <= 0.001 ~ "Down",
+                           TRUE ~ "Insignificant")) |>
+  group_by(HLA, cohort) |>
+  ggplot(aes(x = log_fold_change,
+             y = - log10(p),
+             color = expression)) +
+  theme_bw() +
+  geom_vline(xintercept = 2,
+             linetype = "dashed",
+             colour = "grey") +
+  geom_vline(xintercept = -2,
+             linetype = "dashed",
+             colour = "grey") +
+  geom_vline(xintercept = 0,
+             linetype = "solid",
+             colour = "grey") +
+  geom_hline(yintercept = -log10(0.001),
+             linetype = "dashed",
+             colour = "grey") +
+  geom_point(alpha = a, size = s) +
+  labs(x = "Fold change (log2)",
+       y = "P-value (-log10)") +
+  scale_color_manual(values = volcano_colors) +
+  facet_grid(HLA ~ cohort)
+```
+
+### Volcano plot for all data
+
+```{r}
+data_joined |>
+  mutate(
+    expression = case_when(log_fold_change > 2 & p < 0.001 ~ "Up",
+                           log_fold_change < -2 & p <= 0.001 ~ "Down",
+                           TRUE ~ "Insignificant")) |>
+  ggplot(aes(x = log_fold_change,
+             y = - log10(p),
+             color = expression)) +
+  theme_bw() +
+  geom_vline(xintercept = 2,
+             linetype = "dashed",
+             colour = "grey") +
+  geom_vline(xintercept = -2,
+             linetype = "dashed",
+             colour = "grey") +
+  geom_vline(xintercept = 0,
+             linetype = "solid",
+             colour = "grey") +
+  geom_hline(yintercept = -log10(0.001),
+             linetype = "dashed",
+             colour = "grey") +
+  geom_point(alpha = a, size = s) +
+  scale_color_manual(values = volcano_colors) +
+  labs(x = "Fold change (log2)",
+       y = "P-value (-log10)") 
+```
