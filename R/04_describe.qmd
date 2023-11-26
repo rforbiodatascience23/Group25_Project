@@ -69,9 +69,9 @@ Kan det passe at det bare er antal af rækker vi kigger på, og ikke count eller
 ```{r}
 
 protein_stack <- data_b |>
-  group_by(HLA, protein) %>%
-  count(name = "count_prot") %>%
-  group_by(HLA) %>%
+  group_by(HLA, protein) |>
+  count(name = "count_prot") |>
+  group_by(HLA) |>
   mutate(relative_prot_count = (count_prot / sum(count_prot) ) * 100) |>
   ungroup() |>
   ggplot(aes(fill = protein, 
@@ -88,6 +88,7 @@ protein_stack <- data_b |>
       	caption = 'S. K. Saini et al., Sci. Immunol. 10.1126/sciimmunol.abf7550 (2021)')
 
 ggsave("../results/protein_stack.png")
+protein_stack
 ```
 
 ### Barracoda
@@ -116,7 +117,8 @@ ggplot(data_counts,
                    alpha = 0.8)+
       geom_boxplot(width = boxplot_width,
                    alpha = 0.2)+
-      scale_fill_manual(values=c(color_1, color_2)) +
+      scale_fill_brewer(palette = "Set2")+
+      #scale_fill_manual(values=c(color_1, color_2)) +
       theme_minimal(base_size = text_size)+
       theme(legend.position = 'right')+
     	labs( x='Cohort',
@@ -134,7 +136,7 @@ ggsave("../results/Boxplot_Nb_Responses.png")
 ### FlowJo
 
 ```{r}
-test <- data_p  |> filter(paired == 1) |>
+plot_data <- data_p  |> filter(paired == 1) |>
           mutate(APC_positive = APC_positive*100,     
                            DP_positive = DP_positive*100,   
                            PE_positive = PE_positive*100) |>
@@ -144,28 +146,34 @@ test <- data_p  |> filter(paired == 1) |>
                      values_to = 'Fraction') |>
         select(Fraction, Staining, sample_ID, cohort) |>
         unique()
-test
+
+plot_data
 ```
 
 ```{r}
 
-ggplot(test, 
-       aes(x = Staining, 
-           y = Fraction)) +
-      facet_wrap(~cohort, scales='free_y')+
-      geom_boxplot(width = boxplot_width,
-                   alpha = 0.2)+
-      geom_jitter(size= 1, 
-                  shape= 1) +
-      scale_fill_manual(values=c(color_1, color_2)) +
-      theme_minimal(base_size = text_size)+
-      theme(legend.position = 'bottom')+
-    	labs( x=element_blank(),
-        		y='% multimer CD8+ T-cells',
-        		title = 'Write a clever observation here',
-        		subtitle ='2023',
-        	  fill = 'KIR Blocking',
-        		caption = 'data from xx')
+plot_data |>  
+  ggplot(aes(x = Staining, 
+             y = Fraction, 
+             color = sample_ID)) +
+        facet_wrap(~cohort, scales='free_y')+
+        geom_boxplot(width = boxplot_width,
+                     color = 'gray',
+                     alpha = 0.7 )+
+        geom_jitter(size= 3, 
+                    shape= 20) +
+        scale_x_discrete(labels=c('+KIR Blocking', 'Multimer binding'))+
+        theme_minimal(base_size = text_size)+
+        theme(legend.position = 'right',
+              axis.text.x = element_text(angle = 45, 
+                                         vjust = 1, 
+                                         hjust = 1))+
+      	labs( x=element_blank(),
+          		y='% multimer CD8+ T-cells',
+          		title = 'Limited availability of paired samples from flow cytometry',
+          		subtitle ='No effect of KIR blocking on the overall binding of multimers',
+          	  color = 'Sample ID',
+          		caption = 'data from xx')
 ```
 
 ## Un-paired samples
