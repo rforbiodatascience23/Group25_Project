@@ -12,35 +12,28 @@ Clean Work Environment and Load Packages
 
 ```{r}
 #| message: false
-
 rm(list = ls())
 library(tidyverse)
-
 ```
 
 ### Loading data
 
 ```{r}
 #| message: false
-
 data_path <-  '~/projects/Group25_Project/data'
-
 data_joined <- read_rds(file = file.path(data_path, '03_dat_aug_joined.RDS'))
 data_sig_pairing <- read_rds(file = file.path(data_path, '03_dat_aug_sig_pairing.RDS'))
-
 ```
 
 ### Defining some settings once
 
 ```{r}
-
 # alpha, size and colors for volcano plots
 a <- 0.25                                # alpha
 s <- 0.005                               # size
 volcano_colors <- c("firebrick3",        # down
                     "gray50",            # insignificant
                     "dodgerblue3")       # up
-
 ```
 
 I am unsure which volcano plots we need but here is at least some scaffolding
@@ -48,7 +41,6 @@ I am unsure which volcano plots we need but here is at least some scaffolding
 ### Volcano plots, grouped by cohort and HLA
 
 ```{r}
-
 data_joined |>
   mutate(
     expression = case_when(log_fold_change > 2 & p < 0.001 ~ "Up",
@@ -76,7 +68,6 @@ data_joined |>
        y = "P-value (-log10)") +
   scale_color_manual(values = volcano_colors) +
   facet_grid(HLA ~ cohort)
-
 ```
 
 ### Volcano plot for all data
@@ -107,5 +98,4 @@ data_joined |>
   scale_color_manual(values = volcano_colors) +
   labs(x = "Fold change (log2)",
        y = "P-value (-log10)") 
-
 ```
