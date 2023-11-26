@@ -65,8 +65,6 @@ summary_table_f
 
 ### Protein count distribution
 
-Kan det passe at det bare er antal af rækker vi kigger på, og ikke count eller noget andet??
-
 ```{r}
 
 protein_stack <- data_b |>
@@ -103,7 +101,7 @@ data_counts <-  data_p |>
   count(cohort, sample_ID, KIR_blocking)
 
 # visual settings
-color <- brewer.pal(9, "Paired")[c(1, 3)]
+color1 <- brewer.pal(9, "Paired")[c(1, 3)]
 text_size <- 14
 dot_size <- 0.5
 boxplot_width <- 0.6
@@ -119,7 +117,7 @@ ggplot(data_counts,
                    alpha = 0.8)+
       geom_boxplot(width = boxplot_width,
                    alpha = 0.2)+
-      scale_fill_manual(values=c(color_1)) +
+      scale_fill_manual(values=c(color1)) +
       scale_x_discrete(labels=c('AP (n=15)', 
                                 'BS (n=17)', 
                                 'BC (n=12)'))+
@@ -129,7 +127,6 @@ ggplot(data_counts,
             axis.title.x = element_text(margin = margin(t = 15)),
             axis.title.y = element_text(margin = margin(r = 15)),
             plot.title = element_text(hjust = 0.5),
-            #plot.subtitle = element_text(hjust = 0.5),
             plot.margin = margin(l = 1, 
                                  r = 0.5, 
                                  b = 0.5, 
@@ -204,6 +201,8 @@ unpaired <- data_p  |>
           select(Fraction, Staining, sample_ID, cohort) |>
           unique()
 
+
+
 ggplot(unpaired, 
        aes(x = factor(Staining, 
                  levels= c('PE_positive', 'APC_positive')), 
@@ -216,8 +215,7 @@ ggplot(unpaired,
                    color = 'gray')+
       geom_jitter(size= 1, 
                   shape= 20) +
-      scale_fill_manual(values=c(color_1,
-                                 color_2)) +
+      scale_fill_brewer(palette = "Paired")+
       theme_minimal(base_size = text_size)+
       scale_x_discrete(labels=c('Regular pMHC staining',
                                 '+KIR Blocking'))+

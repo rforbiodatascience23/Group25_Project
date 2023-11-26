@@ -17,6 +17,7 @@ rm(list = ls())
 ```{r}
 #| message: false
 library(tidyverse)
+library(RColorBrewer)
 ```
 
 #### Load Data
@@ -50,6 +51,7 @@ plot_data <-  data_sig_pairing |>
 # Visualisation constants
 line_color ='#636363' 
 textsize = 10 
+color1 <- brewer.pal(9, "Paired")[c(6,2)]
 
 paired_data <- data_sig_pairing |>
   filter(paired == 1)
@@ -68,6 +70,7 @@ paired_data |>
              space='free_x') + 
   geom_point(aes(size = est_frequency), 
              alpha=0.7)+
+  scale_color_manual(values=c(color1)) +
   scale_size(range = c(1, 7)) +
   ylim(0,8) +
   geom_hline(yintercept = 2, 
@@ -76,11 +79,13 @@ paired_data |>
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45,
                                    vjust = 1,
-                                   hjust = 1),
+                                   hjust = 1,
+                                    margin = margin(b = 10)),
+        axis.text.y = element_text(margin = margin(l = 15)),
         panel.margin.x=unit(0.1, "lines"),
         panel.margin.y=unit(0.7, "lines"),
         legend.position = 'bottom',
-        legend.justification = c("right", "top"),
+        legend.justification = c("center", "top"),
         panel.grid.major.x = element_blank(),
         panel.background = element_rect(fill = NA, 
                                         color = "black"),
@@ -92,6 +97,8 @@ paired_data |>
        y="Log Fold Change", 
        color= 'KIR Blocking', 
        size='Est.freq.') 
+
+ggsave("../results/paired_logfold.png", bg='white')
 ```
 
 ### Count vs epitope
@@ -104,22 +111,32 @@ paired_data |>
   
   facet_grid(cohort ~HLA, scales = 'free_x', space='free_x')+ 
   geom_point(aes(size = est_frequency), alpha=0.7)+
+  scale_color_manual(values=c(color1)) +
   scale_size(range = c(2, 7)) +
   theme_minimal()+
   ylim(0, 7000)+
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+  theme(axis.text.x = element_text(angle = 45, 
+                                   vjust = 1, 
+                                   hjust = 1,
+                                   margin = margin(b = 10)),
+        axis.text.y = element_text(margin = margin(l = 15)),
         panel.margin.x=unit(0.1, "lines"),
         panel.margin.y=unit(0.7, "lines"),
         legend.position = 'bottom',
         legend.justification = c("right", "top"),
         panel.grid.major.x = element_blank(),
-        panel.background = element_rect(fill = NA, color = "black"),
-        panel.grid.minor.x = element_line(color = line_color, linetype = 1, size = 0.2)) +
+        panel.background = element_rect(fill = NA, 
+                                        color = "black"),
+        panel.grid.minor.x = element_line(color = line_color, 
+                                          linetype = 1, 
+                                          size = 0.2)) +
   labs(title='Paired Data - Count and epitope', 
        x="pHLA multimer", 
-       y="Count", 
+       y="Count (n)", 
        color= 'KIR blocking', 
        size='Est.freq.') 
+
+ggsave("../results/paired_count.png", bg='white')
 ```
 
 # All significant samples
@@ -142,6 +159,7 @@ log_data |>
              space='free') + 
   geom_point(aes(size = est_frequency), 
                  alpha=0.7)+
+  scale_color_manual(values=c(color1)) +
   scale_size(range = c(0.5, 6)) +
   geom_hline(yintercept = 2, 
              color= line_color,
@@ -151,7 +169,7 @@ log_data |>
         panel.margin.x=unit(0.1, "lines"),
         panel.margin.y=unit(0.7, "lines"),
         legend.position = 'bottom',
-        legend.justification = c("right", "top"),
+        legend.justification = c("center"),
         panel.grid.major.x = element_blank(),
         panel.background = element_rect(fill = NA, 
                                         color = "black"),
@@ -163,6 +181,8 @@ log_data |>
        y="Log Fold Change", 
        color= 'KIR Blocking', 
        size='Est.freq.') 
+
+ggsave("../results/all_logfold.png", bg='white')
 ```
 
 ### Count vs epitope
@@ -178,6 +198,7 @@ signi_data |>
              color = KIR_blocking))+
   facet_grid(cohort ~HLA, scales = 'free', space='free_x') + 
   geom_point(aes(size = est_frequency), alpha=0.7) +
+  scale_color_manual(values=c(color1)) +
   scale_size(range = c(0.5, 6)) +
   theme_minimal() +
   theme(axis.text.x = element_blank(),
@@ -193,4 +214,6 @@ signi_data |>
        y="Count", 
        color= 'KIR Blocking', 
        size='Est.freq.') 
+
+ggsave("../results/all_count.png", bg='white')
 ```
