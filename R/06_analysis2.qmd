@@ -90,6 +90,9 @@ data_joined |>
                                                     b = 0,
                                                     l = 0))) +
   facet_grid(HLA ~ cohort)
+
+ggsave("../results/Volcano_cohorts_HLA.png", 
+       bg = 'white')
 ```
 
 ### Volcano plots all cohorts
@@ -135,6 +138,9 @@ data_joined |>
         legend.position = c(0.78, 0.25)) +
   facet_wrap(~ cohort, 
              nrow = 2)
+
+ggsave("../results/Volcano_cohorts.png", 
+       bg = 'white')
 ```
 
 ### Volcano plot for all data
