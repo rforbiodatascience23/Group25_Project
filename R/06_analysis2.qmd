@@ -14,6 +14,7 @@ Clean Work Environment and Load Packages
 #| message: false
 rm(list = ls())
 library(tidyverse)
+library(RColorBrewer)
 ```
 
 ### Loading data
@@ -31,9 +32,18 @@ data_sig_pairing <- read_rds(file = file.path(data_path, '03_dat_aug_sig_pairing
 # alpha, size and colors for volcano plots
 a <- 0.25                                # alpha
 s <- 0.005                               # size
-volcano_colors <- c("firebrick3",        # down
-                    "gray50",            # insignificant
-                    "dodgerblue3")       # up
+
+colors <- brewer.pal(9, "Paired")[c(2, 6)]
+volcano_colors  <- c(colors[1], colors[2], 'grey')
+
+# adding a response level
+data_joined <- data_joined |>
+  mutate(response =
+           factor(
+             case_when(log_fold_change > 2 & p < 0.001 ~ "Positive",
+                           log_fold_change < -2 & p <= 0.001 ~ "Negative",
+                           TRUE ~ "Insignificant"),
+             levels = c("Positive", "Negative", "Insignificant")))
 ```
 
 I am unsure which volcano plots we need but here is at least some scaffolding
@@ -41,61 +51,136 @@ I am unsure which volcano plots we need but here is at least some scaffolding
 ### Volcano plots, grouped by cohort and HLA
 
 ```{r}
+
 data_joined |>
-  mutate(
-    expression = case_when(log_fold_change > 2 & p < 0.001 ~ "Up",
-                           log_fold_change < -2 & p <= 0.001 ~ "Down",
-                           TRUE ~ "Insignificant")) |>
   group_by(HLA, cohort) |>
   ggplot(aes(x = log_fold_change,
              y = - log10(p),
-             color = expression)) +
+             color = response)) +
   theme_bw() +
   geom_vline(xintercept = 2,
              linetype = "dashed",
-             colour = "grey") +
+             color = "grey") +
   geom_vline(xintercept = -2,
              linetype = "dashed",
-             colour = "grey") +
+             color = "grey") +
   geom_vline(xintercept = 0,
              linetype = "solid",
-             colour = "grey") +
+             color = "grey") +
   geom_hline(yintercept = -log10(0.001),
              linetype = "dashed",
-             colour = "grey") +
+             color = "grey") +
   geom_point(alpha = a, size = s) +
   labs(x = "Fold change (log2)",
        y = "P-value (-log10)") +
   scale_color_manual(values = volcano_colors) +
+    labs(x = "Fold change (log2)",
+       y = "P-value (-log10)",
+       color = "Response",
+       title = "Response levels accross all cohorts, and HLA types",
+       subtitle = "For both paired and unpaired data") +
+  guides(color = guide_legend(override.aes = list(size=2,
+                                                  alpha = 0.75))) +
+  theme(axis.title.y = element_text(margin = margin(t = 0,
+                                                    r = 10,
+                                                    b = 0,
+                                                    l = 0)),
+        axis.title.x = element_text(margin = margin(t = 10,
+                                                    r = 0,
+                                                    b = 0,
+                                                    l = 0))) +
   facet_grid(HLA ~ cohort)
+
+ggsave("../results/Volcano_cohorts_HLA.png", 
+       bg = 'white')
+```
+
+### Volcano plots all cohorts
+
+```{r}
+data_joined |>
+  group_by(HLA, cohort) |>
+  ggplot(aes(x = log_fold_change,
+             y = - log10(p),
+             color = response)) +
+  theme_bw() +
+  geom_vline(xintercept = 2,
+             linetype = "dashed",
+             color = "grey") +
+  geom_vline(xintercept = -2,
+             linetype = "dashed",
+             color = "grey") +
+  geom_vline(xintercept = 0,
+             linetype = "solid",
+             color = "grey") +
+  geom_hline(yintercept = -log10(0.001),
+             linetype = "dashed",
+             color = "grey") +
+  geom_point(alpha = a, size = s) +
+  labs(x = "Fold change (log2)",
+       y = "P-value (-log10)") +
+  scale_color_manual(values = volcano_colors) +
+    labs(x = "Fold change (log2)",
+       y = "P-value (-log10)",
+       color = "Response",
+       title = "Response levels accross all cohorts, both paired and unpaired data",
+       subtitle = "AP = , BS =, BC = ") +
+  guides(color = guide_legend(override.aes = list(size=2,
+                                                  alpha = 0.75))) +
+  theme(axis.title.y = element_text(margin = margin(t = 0,
+                                                    r = 10,
+                                                    b = 0,
+                                                    l = 0)),
+        axis.title.x = element_text(margin = margin(t = 10,
+                                                    r = 0,
+                                                    b = 0,
+                                                    l = 0)),
+        legend.position = c(0.78, 0.25)) +
+  facet_wrap(~ cohort, 
+             nrow = 2)
+
+ggsave("../results/Volcano_cohorts.png", 
+       bg = 'white')
 ```
 
 ### Volcano plot for all data
 
 ```{r}
 data_joined |>
-  mutate(
-    expression = case_when(log_fold_change > 2 & p < 0.001 ~ "Up",
-                           log_fold_change < -2 & p <= 0.001 ~ "Down",
-                           TRUE ~ "Insignificant")) |>
   ggplot(aes(x = log_fold_change,
              y = - log10(p),
-             color = expression)) +
+             color = response)) +
   theme_bw() +
   geom_vline(xintercept = 2,
              linetype = "dashed",
-             colour = "grey") +
+             color = "grey") +
   geom_vline(xintercept = -2,
              linetype = "dashed",
-             colour = "grey") +
+             color = "grey") +
   geom_vline(xintercept = 0,
              linetype = "solid",
-             colour = "grey") +
+             color = "grey") +
   geom_hline(yintercept = -log10(0.001),
              linetype = "dashed",
-             colour = "grey") +
+             color = "grey") +
   geom_point(alpha = a, size = s) +
   scale_color_manual(values = volcano_colors) +
   labs(x = "Fold change (log2)",
-       y = "P-value (-log10)") 
+       y = "P-value (-log10)",
+       color = "Response",
+       title = "Response levels accross all cohorts",
+       subtitle = "For both paired and unpaired data") +
+  guides(color = guide_legend(override.aes = list(size=2,
+                                                  alpha = 0.75))) +
+  theme(axis.title.y = element_text(margin = margin(t = 0,
+                                                    r = 10,
+                                                    b = 0,
+                                                    l = 0)),
+        axis.title.x = element_text(margin = margin(t = 10,
+                                                    r = 0,
+                                                    b = 0,
+                                                    l = 0)))
+
+ggsave("../results/Volcano_all.png", 
+       bg = 'white')
 ```
