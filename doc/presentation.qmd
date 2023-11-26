@@ -37,6 +37,12 @@ table_one_flowjo <- read_rds(file = file.path(results_path, "tableOne_f.RDS"))
 
 ```
 
+## Overview - Flow Chart
+
+```{r, echo=FALSE, out.width="50%", fig.cap="A nice image."}
+knitr::include_graphics("Flowchart.png")
+```
+
 ## Barracoda data - Table 1a
 
 ```{r}
