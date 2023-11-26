@@ -46,11 +46,10 @@ data_joined <- data_joined |>
              levels = c("Positive", "Negative", "Insignificant")))
 ```
 
-I am unsure which volcano plots we need but here is at least some scaffolding
-
 ### Volcano plots, grouped by cohort and HLA
 
 ```{r}
+#| message: false
 
 data_joined |>
   group_by(HLA, cohort) |>
@@ -98,6 +97,8 @@ ggsave("../results/Volcano_cohorts_HLA.png",
 ### Volcano plots all cohorts
 
 ```{r}
+#| message: false
+
 data_joined |>
   group_by(HLA, cohort) |>
   ggplot(aes(x = log_fold_change,
@@ -146,6 +147,8 @@ ggsave("../results/Volcano_cohorts.png",
 ### Volcano plot for all data
 
 ```{r}
+#| message: false
+
 data_joined |>
   ggplot(aes(x = log_fold_change,
              y = - log10(p),
