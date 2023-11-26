@@ -43,8 +43,23 @@ if (!dir.exists(results_path)) {
 dir.create(results_path)
 }
 
-
 ```
+
+### Including all .qmd files
+
+{{< include 01_load.qmd >}}
+
+{{< include 02_clean.qmd >}}
+
+{{< include 03_augment.qmd >}}
+
+{{< include 04_describe.qmd >}}
+
+{{< include 05_analysis1.qmd >}}
+
+{{< include 06_analysis2.qmd >}}
+
+{{< include 07_analysis3.qmd >}}
 
 ### Running all the .qmd files
 
@@ -53,46 +68,48 @@ dir.create(results_path)
 #| warning: false
 #| results: hide
 
-quarto_render("01_load.qmd")
-file.rename(from = "01_load.html",
-            to = "../results/01_load.html")
-file.rename(from = "01_load_files",
-            to = "../results/01_load_files")
+#quarto_render("00_all.qmd")
 
-quarto_render("02_clean.qmd")
-file.rename(from = "02_clean.html",
-            to = "../results/02_clean.html")
-file.rename(from = "02_clean_files",
-            to = "../results/02_clean_files")
-
-quarto_render("03_augment.qmd")
-file.rename(from = "03_augment.html",
-            to = "../results/03_augment.html")
-file.rename(from = "03_augment_files",
-            to = "../results/03_augment_files")
-
-quarto_render("04_describe.qmd")
-file.rename(from = "04_describe.html",
-            to = "../results/04_describe.html")
-file.rename(from = "04_describe_files",
-            to = "../results/04_describe_files")
-
-quarto_render("05_analysis1.qmd")
-file.rename(from = "05_analysis1.html",
-            to = "../results/05_analysis1.html")
-file.rename(from = "05_analysis1_files",
-            to = "../results/05_analysis1_files")
-
-quarto_render("06_analysis2.qmd")
-file.rename(from = "06_analysis2.html",
-            to = "../results/06_analysis2.html")
-file.rename(from = "06_analysis2_files",
-            to = "../results/06_analysis2_files")
-
-quarto_render("07_analysis3.qmd")
-file.rename(from = "07_analysis3.html",
-            to = "../results/07_analysis3.html")
-file.rename(from = "07_analysis3_files",
-            to = "../results/06_analysis3_files")
+# quarto_render("01_load.qmd")
+# file.rename(from = "01_load.html",
+#             to = "../results/01_load.html")
+# file.rename(from = "01_load_files",
+#             to = "../results/01_load_files")
+# 
+# quarto_render("02_clean.qmd")
+# file.rename(from = "02_clean.html",
+#             to = "../results/02_clean.html")
+# file.rename(from = "02_clean_files",
+#             to = "../results/02_clean_files")
+# 
+# quarto_render("03_augment.qmd")
+# file.rename(from = "03_augment.html",
+#             to = "../results/03_augment.html")
+# file.rename(from = "03_augment_files",
+#             to = "../results/03_augment_files")
+# 
+# quarto_render("04_describe.qmd")
+# file.rename(from = "04_describe.html",
+#             to = "../results/04_describe.html")
+# file.rename(from = "04_describe_files",
+#             to = "../results/04_describe_files")
+# 
+# quarto_render("05_analysis1.qmd")
+# file.rename(from = "05_analysis1.html",
+#             to = "../results/05_analysis1.html")
+# file.rename(from = "05_analysis1_files",
+#             to = "../results/05_analysis1_files")
+# 
+# quarto_render("06_analysis2.qmd")
+# file.rename(from = "06_analysis2.html",
+#             to = "../results/06_analysis2.html")
+# file.rename(from = "06_analysis2_files",
+#             to = "../results/06_analysis2_files")
+# 
+# quarto_render("07_analysis3.qmd")
+# file.rename(from = "07_analysis3.html",
+#             to = "../results/07_analysis3.html")
+# file.rename(from = "07_analysis3_files",
+#             to = "../results/06_analysis3_files")
 
 ```
