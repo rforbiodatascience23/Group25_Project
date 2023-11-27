@@ -1,5 +1,5 @@
 ---
-title: "The effect of KIR-blocking for HLA-C in SarsCov2 immune responses"
+title: "The effect of KIR-blocking on HLA-C immune response to SarsCov2"
 authors: "Emilie Sofie Engdal, Manon Kirstine Chevalier"
 format:
   revealjs:

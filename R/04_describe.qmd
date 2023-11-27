@@ -178,7 +178,7 @@ plot_data |>
                      alpha = 0.7 )+
         geom_jitter(size= 3, 
                     shape= 20) +
-        scale_x_discrete(labels=c('Regular pMHC staining', '+KIR Blocking'))+
+        scale_x_discrete(labels=c('pMHC staining', '+KIR Blocking'))+
         theme_minimal(base_size = text_size)+
         theme(legend.position = 'right',
               plot.caption = element_text(size = 8),

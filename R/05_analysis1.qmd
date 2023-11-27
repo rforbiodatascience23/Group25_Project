@@ -85,7 +85,7 @@ paired_data |>
   theme(axis.text.x = element_text(angle = 45,
                                    vjust = 1,
                                    hjust = 1,
-                                    margin = margin(b = 10)),
+                                   margin = margin(b = 10)),
         axis.text.y = element_text(margin = margin(l = 15)),
         panel.margin.x=unit(0.1, "lines"),
         panel.margin.y=unit(0.7, "lines"),

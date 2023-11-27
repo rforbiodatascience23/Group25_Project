@@ -175,8 +175,8 @@ data_joined |>
   labs(x = "Fold change (log2)",
        y = "P-value (-log10)",
        color = "Response",
-       title = "Response levels accross all cohorts",
-       subtitle = "For both paired and unpaired data") +
+       title = "Response levels accross whole dataset",
+       subtitle = "Only small subset (n = 542) is significant at p < 0.001 and LFC >= 2") +
   guides(color = guide_legend(override.aes = list(size=2,
                                                   alpha = 0.75))) +
   theme(axis.title.y = element_text(margin = margin(t = 0,
