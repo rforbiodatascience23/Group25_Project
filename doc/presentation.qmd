@@ -1,0 +1,118 @@
+---
+title: "Group 25 Presentation"
+authors: "Darya Trubach, Emilie Sofie Engdal, Manon Kirstine Chevalier"
+format:
+  revealjs:
+    theme: moon
+    smaller: true
+    scrollable: true
+    embed-resources: true
+    logo: DTU_logo_Corp_Red_RGB.png
+    footer: "R4BDS"
+editor: visual
+---
+
+# Introduction
+
+::: notes
+Themes to use: dark, moon, night, simple, solarized
+
+https://quarto.org/docs/presentations/revealjs/#overview
+:::
+
+## Biological background
+
+::: notes
+Speaker notes go here.
+:::
+
+# Methods
+
+```{r}
+library(tidyverse)
+
+results_path <- "~/projects/Group25_Project/results"
+table_one_barracoda <- read_rds(file = file.path(results_path, "tableOne_b.RDS"))
+table_one_flowjo <- read_rds(file = file.path(results_path, "tableOne_f.RDS"))
+
+```
+
+## Overview - Flow Chart
+
+```{r, echo=FALSE, out.width="50%", fig.cap="A nice image."}
+knitr::include_graphics("Flowchart.png")
+```
+
+## Barracoda data - Table 1a
+
+```{r}
+table_one_barracoda
+```
+
+::: notes
+Speaker notes go here.
+:::
+
+## Flowjo data - Table 1b
+
+```{r}
+
+table_one_flowjo
+```
+
+::: notes
+Speaker notes go here.
+:::
+
+## Computations
+
+::: notes
+Speaker notes go here.
+:::
+
+# Results
+
+```{r}
+
+
+```
+
+::: notes
+Speaker notes go here.
+:::
+
+## Visualisation #1
+
+```{r, echo=FALSE, out.width="50%", fig.cap="A nice image."}
+knitr::include_graphics(file.path(results_path, "Boxplot_Nb_Responses.png"))
+```
+
+::: notes
+Speaker notes go here.
+:::
+
+## Visualisation #2
+
+::: notes
+Speaker notes go here.
+:::
+
+## Visualisation #3
+
+::: notes
+Speaker notes go here.
+:::
+
+# Discussion
+
+Insert some conclusions here
+
+::: notes
+Speaker notes go here.
+:::
+
+# Questions?
+
+::: notes
+Speaker notes go here.
+:::
