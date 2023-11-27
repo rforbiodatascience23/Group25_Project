@@ -14,6 +14,14 @@ editor: visual
 
 # Introduction
 
+```{r}
+library(tidyverse)
+
+results_path <- "~/projects/Group25_Project/results"
+table_one_barracoda <- read_rds(file = file.path(results_path, "tableOne_b.RDS"))
+table_one_flowjo <- read_rds(file = file.path(results_path, "tableOne_f.RDS"))
+```
+
 ::: notes
 Themes to use: dark, moon, night, simple, solarized
 
@@ -26,56 +34,29 @@ https://quarto.org/docs/presentations/revealjs/#overview
 Speaker notes go here.
 :::
 
-# Methods
+# Materials and Methods
+
+## Data
 
 ```{r}
-library(tidyverse)
-
-results_path <- "~/projects/Group25_Project/results"
-table_one_barracoda <- read_rds(file = file.path(results_path, "tableOne_b.RDS"))
-table_one_flowjo <- read_rds(file = file.path(results_path, "tableOne_f.RDS"))
-
+table_one_flowjo
 ```
-
-## Overview - Flow Chart
-
-```{r, echo=FALSE, out.width="50%", fig.cap="A nice image."}
-knitr::include_graphics("Flowchart.png")
-```
-
-## Barracoda data - Table 1a
 
 ```{r}
 table_one_barracoda
 ```
 
-::: notes
-Speaker notes go here.
-:::
+## Overview - Flow Chart
 
-## Flowjo data - Table 1b
-
-```{r}
-
-table_one_flowjo
+```{r, echo=FALSE, out.width="50%", fig.cap="A nice image."}
+knitr::include_graphics("flowfig.png")
 ```
-
-::: notes
-Speaker notes go here.
-:::
-
-## Computations
 
 ::: notes
 Speaker notes go here.
 :::
 
 # Results
-
-```{r}
-
-
-```
 
 ::: notes
 Speaker notes go here.
@@ -92,6 +73,10 @@ Speaker notes go here.
 :::
 
 ## Visualisation #2
+
+```{r, echo=FALSE, out.width="50%", fig.cap="A nice image."}
+knitr::include_graphics(file.path(results_path, "paired_sample_boxplot.png"))
+```
 
 ::: notes
 Speaker notes go here.
