@@ -218,7 +218,7 @@ signi_data |>
         panel.grid.major.x = element_blank(),
         panel.background = element_rect(fill = NA, color = "black"),
         panel.grid.minor.x = element_line(color = line_color, linetype = 1, size = 0.2)) +
-  labs(title='Significant Data counts', 
+  labs(title='Peptide specific downregulation of responses as a result of KIR blocking',
        x="Unique pHLA", 
        y="Count", 
        color= 'KIR Blocking', 
