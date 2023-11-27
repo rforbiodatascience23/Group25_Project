@@ -30,6 +30,8 @@ This analysis aims to uncover insights into HLA-C-restricted CD8 T cell response
 
 The data consists of internal research data from The Danish University of Technology, Department of Health Tech created by Andreas Kongsgaard. If granted access by the project contributors, it can be retrieved from: https://dtudk-my.sharepoint.com/:f:/r/personal/s194360_dtu_dk/Documents/R%20for%20BioData?csf=1&web=1&e=FMK1xA 
 
+After downloading and uploading the whole data/ folder into the R Project as is, the whole project can be run and rendered by running the RUNME.R file (including the Quarto presentation).
+
 ------------------------------------------------------------------------
 
 ## Dependencies
