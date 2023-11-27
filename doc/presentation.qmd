@@ -1,6 +1,6 @@
 ---
-title: "Group 25 Presentation"
-authors: "Darya Trubach, Emilie Sofie Engdal, Manon Kirstine Chevalier"
+title: "The effect of KIR-blocking on HLA-C immune response to SarsCov2"
+authors: "Emilie Sofie Engdal, Manon Kirstine Chevalier"
 format:
   revealjs:
     theme: moon
@@ -8,25 +8,40 @@ format:
     scrollable: true
     embed-resources: true
     logo: DTU_logo_Corp_Red_RGB.png
-    footer: "R4BDS"
+    footer: "R4BDS - Group 25"
 editor: visual
 ---
 
-# Introduction
+## Introduction
+
+```{r}
+library(tidyverse)
+results_path <- "~/projects/Group25_Project/results"
+table_one_barracoda <- read_rds(file = file.path(results_path, "tableOne_b.RDS"))
+table_one_flowjo <- read_rds(file = file.path(results_path, "tableOne_f.RDS"))
+```
+
+-   **Unusually high** number of **HLA-C recognition** in CD8+ T cells
+
+-   Responses could **not be validated** through **TCR-specific confirmation assays**
+
+-   The **Killer Immunoglobin Receptor (KIR)** leads to **false positive responses**
+
+```{r, echo=FALSE, fig.align='center', fig.cap='Figure 1: KIR binding and blocking (Source: Biorender)'}
+knitr::include_graphics("Intro_figure.png")
+```
 
 ::: notes
-Themes to use: dark, moon, night, simple, solarized
+EMILIE:
 
-https://quarto.org/docs/presentations/revealjs/#overview
+The major histocompatibility complex (MHC), or HLA in humans, are well-known for their crucial role in assisting T cells in the induction of effective immune responses against antigens. While both HLA-A and -B have been widely studied for their interaction with T-cells and T-cell receptors (TCRs), much less is known about HLA-C - possibly due to the overall lower expression of HLA-C molecules.
+
+However, newly published research has shown that HLA-C may pose a larger role in the immune response than first expected as an unusually high number of HLA-C recognition in CD8+ T cells was observed across cancer cohorts. A substantial portion of the identified responses could not be validated using a TCR-specific confirmation assay. This observation prompted the motivation for our study, aiming to distinguish between TCR-dependent and independent responses and hereby characterize TCR-specific and unspecific bindings of HLA-C molecules.
+
+The study revealed that killer immunoglobulin receptors (KIR) bound to HLA-C restricted peptide-MHC complexes (pMHCs), leads to false-positive responses. The KIR receptor can be either inhibitory or activating and little is known about their role in T cells - despite being expressed at an average rate of 5%. The analysis made in this presentation therefore seek to clarify the understanding of the interactions involved in TCR-specific responses in HLA-C by employing a KIR antibody.
 :::
 
-## Biological background
-
-::: notes
-Speaker notes go here.
-:::
-
-# Methods
+## Materials and Methods - Project Flow Chart
 
 ```{r}
 library(tidyverse)
@@ -37,82 +52,240 @@ table_one_flowjo <- read_rds(file = file.path(results_path, "tableOne_f.RDS"))
 
 ```
 
-## Overview - Flow Chart
-
-```{r, echo=FALSE, out.width="50%", fig.cap="A nice image."}
-knitr::include_graphics("Flowchart.png")
+```{r, echo=FALSE, fig.cap='Figure 2: Flowchart of the project'}
+knitr::include_graphics("flowfig.png")
 ```
 
-## Barracoda data - Table 1a
+::: notes
+EMILIE:
 
-```{r}
+This figure illustrates our workflow process. The two types of raw data were loaded and cleaned. The cleaning and augmentation step quickly became intertwined: information was present in the filename which was needed in the table to distinguish between samples with KIR blocking and those without. We also calculated some variables necessary for the visualisation (factorised columns for KIR blocking, DP factor, cohort grouping).
+:::
+
+## Materials and Methods
+
+*Data:*
+
+-   **High-throughput** experiment
+
+-   Thousands of **SarsCov2 peptides** binding to **T-cells**
+
+-   **TCR-dependent** or TCR-[in]{.underline}dependent (i.e.: **KIR-mediated**)?
+
+. . .
+
+*3 cohorts:*
+
+-   **AP:** Leukemia patients who have had COVID-19 *(n = 12)*
+
+-   **BS:** Healthy nurses who have had COVID-19 *(n = 17)*
+
+-   **BC:** Healthy donors *(n = 15)*
+
+. . .
+
+*Methods:*
+
+-   **DNA-barcoding**: Tagging each peptide-HLA pair uniquely
+
+-   **Flow cytometry:** Sorting T-cells based on TCR vs KIR binding
+
+::: notes
+MANON: The data used in this projects comes from a high-throughput experiment looking at thousands of SarsCov2 peptides and their binding to T-cells. More specifically the study aims to investigate whether the obersved binding was TCR-dependent or TCR-independent (i.e.: KIR-mediated).
+
+This was done for 3 cohorts: - AP cohort: Leukemia patients who have had COVID-19 (n = 12) - BS cohort: Healthy nurses who have had COVID-19 (n = 17) - BC cohort: Healthy donors (n = 15)
+:::
+
+## Materials and Methods - Barracoda data
+
+::: columns
+::: {.column width="70%"}
+```{r, echo=FALSE, fig.cap='Table 1: Barracoda data'}
 table_one_barracoda
-```
-
-::: notes
-Speaker notes go here.
-:::
-
-## Flowjo data - Table 1b
-
-```{r}
-
-table_one_flowjo
-```
-
-::: notes
-Speaker notes go here.
-:::
-
-## Computations
-
-::: notes
-Speaker notes go here.
-:::
-
-# Results
-
-```{r}
-
 
 ```
 
-::: notes
-Speaker notes go here.
-:::
+```{r, echo=FALSE, fig.cap='Figure 3: Protein representation accross the 4 HLA-C subtypes'}
 
-## Visualisation #1
-
-```{r, echo=FALSE, out.width="50%", fig.cap="A nice image."}
-knitr::include_graphics(file.path(results_path, "Boxplot_Nb_Responses.png"))
+knitr::include_graphics(file.path(results_path, "protein_stack.png"))
 ```
-
-::: notes
-Speaker notes go here.
 :::
 
-## Visualisation #2
+::: {.column width="30%"}
+**\~ 32 000 bar-codes** (patient-HLA-peptide combinations)
 
-::: notes
-Speaker notes go here.
+-   44 patients
+
+-   4 HLA types
+
+-   11 protein types
+:::
 :::
 
-## Visualisation #3
-
 ::: notes
-Speaker notes go here.
+MANON:
+
+The log-fold-change describes how much the expression of barcodes has increased compared to baseline control levels.
 :::
 
-# Discussion
+## Results - Filtering only significant responses
 
-Insert some conclusions here
+The number of observations reduced **drastically** during wrangling:
 
-::: notes
-Speaker notes go here.
+::: columns
+::: {.column width="70%"}
+```{r, echo=FALSE,, fig.cap='Figure 4: Volcano plot of all responses in joined dataset'}
+knitr::include_graphics(file.path(results_path, "Volcano_all.png"))
+```
 :::
 
-# Questions?
+::: {.column width="30%"}
+-   **Original:** 31796
+
+-   **w. Flowjo:** 22819
+
+-   **Significant:** 542
+:::
+:::
 
 ::: notes
-Speaker notes go here.
+MANON:
+
+There was a lot of data but actually only some of it was relevant to us. Namely the specific HLA-peptide pairs that were at least overexpressed with a log fold change of 2, at a significance level below p = 0.001, in other words: the blue datapoints. These criteria greatly reduce our data set from 31796 to only 542 significant datapoints.
+:::
+
+## Results - Paired boxblot
+
+**Paired data** to compare TCR-dependent and TCR-[in]{.underline}dependent responses:
+
+::: columns
+::: {.column width="70%"}
+```{r, echo=FALSE, fig.cap='Figure 5: Effect of KIR blocking'}
+knitr::include_graphics(file.path(results_path, "paired_sample_boxplot.png"))
+```
+:::
+
+::: {.column width="30%"}
+This further reduced the dataset size:
+
+-   **Original:** 31796
+
+-   **Significant:** 542
+
+-   **Paired:** 22
+
+    -   **11 pairs**
+
+        -   1 normal
+
+        -   1 KIR-blocked
+:::
+:::
+
+::: notes
+MANON:
+
+From the 542 samples only 22 were tested both with and without KIR-blocking. This makes our paired data set really small.
+
+However we can still see that the KIR antibody added to these samples to block KIR-pHMC binding, clearly indicates the effect of reducing the total binding of pMHC multimers. This suggests that a large portion of the response was caused by pMHC binding to KIRs instead of the intended TCR, causing a high false positive rate.
+
+A similar boxplot was made across all cohorts with both paired and un-paired samples showing the same tendency. This suggests that KIR-blocking is a good way of isolating TCR-dependent immune responses.
+:::
+
+## Results - Bubble plot - paired
+
+$$
+Est. Freq = \left( \frac{count_{barcode}}{count_{total}} \cdot 100 \% \right) \cdot PE
+$$
+
+::: columns
+::: {.column width="70%"}
+```{r, echo=FALSE, fig.cap='Figure 6: Responses across pMHC multimers in the paired dataset'}
+knitr::include_graphics(file.path(results_path, "paired_count.png"))
+```
+:::
+
+::: {.column width="30%"}
+-   The fraction of **T cells recognising the specified peptide**
+
+-   C0602 is a **true response**
+
+-   AP cohort may have **lower KIR expression** due to pathology
+:::
+:::
+
+::: notes
+EMILIE:
+
+we extracted peptides that had shown a significant response for the paired data. The distribution of responses across the HLA-C allotypes are combined with the KIR blocking condition and response counts. The estimated frequency indicates the  fraction of T cells that only recognises that specific peptide and was calculated earlier as:
+
+The plot shows us that the C0602 group has no change from KIR blocking, which points to it being a true response binding to TCR. In the C0701 and 02 groups we see a fall in response size for all observed responses in the BS cohort. This implies that we do indeed remove false positive responses by KIR-blocking. Interestingly, we do not see this tendency in the AP cohort with hematological patients. This could be based on the pathology of the cohort, that individuals with chronic illnesses and cancer have a tendency of lower KIR expression on the cell surface
+
+we extracted peptides that had shown a significant response for the paired data. The distribution of responses across the HLA-C allotypes are combined with the KIR blocking condition and response counts.
+
+The plot shows us that the C0602 group has no change from KIR blocking, which points to it being a true response binding to TCR. In the C0701 and 02 groups we see a fall in response size for all observed responses in the BS cohort. This implies that we do indeed remove false positive responses by KIR-blocking. Interestingly, we do not see this tendency in the AP cohort with hematological patients. This could be based on the pathology of the cohort, that individuals with chronic illnesses and cancer have a tendency of lower KIR expression on the cell surface
+:::
+
+## Results - Bubble plot - unpaired
+
+::: columns
+::: {.column width="70%"}
+```{r, echo=FALSE, fig.cap='Figure 7: Responses across pMHC multimers in the unpaired dataset'}
+knitr::include_graphics(file.path(results_path, "all_count.png"))
+```
+:::
+
+::: {.column width="30%"}
+-   BC cohort show **significant response** for C0401
+
+-   **False positives are removed** in BS cohort for C0602
+
+-   C0701 and C0702 show **inconsistent responses**
+:::
+:::
+
+::: notes
+EMILIE:
+
+Plot is for both paired and non-paired samples across all cohorts. For C0401, only the BC cohort shows significant responses in both KIR blocked and non blocked samples. C0602, the BS cohort shows a significant decrease in the amount of significant responses after KIR blocking. KIR blocking removes responses as intended. However, this could also be caused by the fact that these samples are non paired, potentially making the donor variation affect the repertoire of significant responses. For  C0702 and C0701 we observe a tendency for the peptide specific responses as some are reduced after KIR blocking. However, in a few cases we also see an upregulation. This suggests that the KIR-blocking method may not be as robust as initially believed, introducing a level of complexity and prompting a closer examination of its reliability in certain contexts
+
+In general there is a tendency that KIR blocking is seemingly less effective than expected, although we do see a fall in responses for specific HLA C allotypes across the cohorts.
+
+(demonstrated a significant reduction in response by employing a KIR antibody - indicating that only the TCR-specific responses remained,)
+
+The estimated frequency indicates the fraction of T cells that only recognises that specific peptide and was calculated earlier as: For C0401, only the BC cohort shows significant responses in both KIR blocked and non blocked samples. C0602, the BS cohort shows a significant decrease in the amount of significant responses after KIR blocking (lots of red dots, very few blue (obs maybe I changed the colors??)). This could also be caused by the fact that these samples are non paired, potentially making the donor variation affect the repertoire of significant responses. For C0702 and C0701 we see peptide specific responses that disappears after KIR blocking.
+
+In general there is a tendency that KIR blocking is seemingly less effective than expected, although we do see a fall in responses for specific HLA C allotypes across the cohorts.
+:::
+
+## Discussion
+
+
+-   KIR- blocking was showed to **reduce the binding of pHMC**
+    -   corroborates TRC-independent binding
+-   **KIR-blocking** was **less efficient** in reducing the binding of pHMC in the **AP cohort**
+    -   **hematological patients** may have a **lower KIR expression**
+-   Some results suggest that KIR-blocking is **not as robust/reliable as expected**
+
+. . .
+
+### Limitations
+
+-   The **paired dataset was really small**, hard to draw reliable conclusions
+
+-   New info from this research group indicates that the **KIR-antibody used** in this experiment **only blocked KIR-C1 but not -C2**
+
+    -   **C0401 and C0601** are C2 ligands and were therefore **not blocked**
+
+    -   This would **explain** the **unreliable results**, and **variation between cohorts**
+
+
+::: notes
+MANON:
+
+The registration of false positive responses were shown on a small subset of paired samples - it would require additional analysis in the future to confirm TCR specific response without the presence of non-blocked KIRs.
+
+We could have made some changes to the threshold values to include more samples. We might lose some of the KIR blocked responses that falls beneath the threshold.
+
+We have two sub types of KIR receptors, namely C1 and C2. However, just last week the phDs who made the dataset found that only C1 is blocked with the blocking antibody that we have. This means, that not all of them are blocked and some are still able to bind to pMHC. C0401 and C0601 are C2 ligands This makes us wonder whether all KIR receptors are truly blocked by the anti-KIR antibody used in this experiment
 :::
