@@ -32,21 +32,6 @@ data_sig_pairing <- read_rds(file = '~/projects/Group25_Project/data/03_dat_aug_
 data_joined <- read_rds(file = '~/projects/Group25_Project/data/03_dat_aug_joined.RDS')
 ```
 
-### Add response factor
-
-(Not relevant now, but might need to group by response)
-
-```{r}
-#| message: false
-
-plot_data <-  data_sig_pairing |>
-  mutate(response = case_when(
-    log_fold_change > 2 ~ 'High',
-    log_fold_change > 1.5 & log_fold_change <= 2 ~ 'Medium',
-    log_fold_change > 1 & log_fold_change <= 1.5 ~ 'Low',
-    TRUE ~ 'No Response'))
-```
-
 # Plotting paired samples
 
 ```{r}
@@ -115,13 +100,15 @@ paired_data |>
   ggplot(aes(x = peptide, 
              y = count, 
              color = KIR_blocking)) +
-  
-  facet_grid(cohort ~HLA, scales = 'free_x', space='free_x')+ 
-  geom_point(aes(size = est_frequency), alpha=0.7)+
+  facet_grid(cohort ~HLA,
+             scales = 'free_x',
+             space='free_x') + 
+  geom_point(aes(size = est_frequency),
+             alpha=0.7) +
   scale_color_manual(values=c(color1)) +
   scale_size(range = c(2, 7)) +
-  theme_minimal()+
-  ylim(0, 7000)+
+  theme_minimal() +
+  ylim(0, 7000) +
   theme(axis.text.x = element_text(angle = 45, 
                                    vjust = 1, 
                                    hjust = 1,
@@ -205,8 +192,11 @@ signi_data |>
   ggplot(aes(x = peptide, 
              y = count, 
              color = KIR_blocking))+
-  facet_grid(cohort ~HLA, scales = 'free', space='free_x') + 
-  geom_point(aes(size = est_frequency), alpha=0.7) +
+  facet_grid(cohort ~HLA,
+             scales = 'free',
+             space='free_x') + 
+  geom_point(aes(size = est_frequency),
+             alpha=0.7) +
   scale_color_manual(values=c(color1)) +
   scale_size(range = c(0.5, 6)) +
   theme_minimal() +

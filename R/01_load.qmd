@@ -76,7 +76,8 @@ data_b <- map(file_paths_barra,
 
 ```{r}
 
-saveRDS(data_b, file = outfile_path_barra)
+saveRDS(data_b,
+        file = outfile_path_barra)
 
 ```
 
@@ -124,6 +125,8 @@ data_f <- map(file_paths_flow,
 
 ```{r}
 
-saveRDS(data_f, file = outfile_path_flow)
+saveRDS(data_f,
+        file = outfile_path_flow)
 
 ```
+

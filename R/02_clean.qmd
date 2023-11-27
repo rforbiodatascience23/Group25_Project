@@ -28,8 +28,10 @@ data_path <- "~/projects/Group25_Project/data"
 ```{r}
 #| message: false
 
-data_load_b_path <- file.path(data_path, "01_dat_load_barracoda.RDS")
-outfile_b_path <- file.path(data_path, '02_dat_clean_barracoda.RDS')
+data_load_b_path <- file.path(data_path,
+                              "01_dat_load_barracoda.RDS")
+outfile_b_path <- file.path(data_path,
+                            '02_dat_clean_barracoda.RDS')
 data_load_b <- read_rds(file = data_load_b_path)
 
 ```
@@ -51,9 +53,14 @@ We are not interested in HLA-B type in this project, so any sample related to HL
 
 ```{r}
 data_clean_b <- data_clean_b |>
-  mutate(sample = ifelse(!grepl("^[A-Z]{2}", sample),              # add 'BC' to sample
-                         paste0("BC", sample), sample),
-         sample = str_replace(sample, '-','')) |>                  # remove dashes
+  mutate(sample = ifelse(!grepl("^[A-Z]{2}",
+                                sample),              # add 'BC' to sample
+                         paste0("BC",
+                                sample),
+                         sample),
+         sample = str_replace(sample,
+                              '-',
+                              '')) |>                  # remove dashes
   filter(!HLA=='HLA-B15:01')                                       # removing HLA-Bs
   
 ```
@@ -121,7 +128,8 @@ data_clean_b <- data_clean_b |>
 ### Export data
 
 ```{r}
-saveRDS(data_clean_b, file = outfile_b_path)
+saveRDS(data_clean_b,
+        file = outfile_b_path)
 ```
 
 ## Flowjo
@@ -131,11 +139,13 @@ saveRDS(data_clean_b, file = outfile_b_path)
 ```{r}
 #| message: false
 
-data_load_f_path <- file.path(data_path, "01_dat_load_flowjo.RDS")
+data_load_f_path <- file.path(data_path,
+                              "01_dat_load_flowjo.RDS")
 
 data_load_f <- read_rds(file = data_load_f_path)
 
-outfile_f_path <- file.path(data_path, '02_dat_clean_flowjo.RDS')
+outfile_f_path <- file.path(data_path,
+                            '02_dat_clean_flowjo.RDS')
 ```
 
 ### Removing irrelevant columns
@@ -181,5 +191,7 @@ data_clean_f <- data_clean_f |>
 
 ```{r}
 
-saveRDS(data_clean_f, file = outfile_f_path)
+saveRDS(data_clean_f,
+        file = outfile_f_path)
 ```
+

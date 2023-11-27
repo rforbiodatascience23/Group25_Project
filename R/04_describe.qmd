@@ -39,7 +39,8 @@ summary_table <- data_b |>
                 table1( x = formula(~ KIR_blocking + log_fold_change+protein + HLA| cohort),
                         data = _)
 
-saveRDS(summary_table, file = "../results/tableOne_b.RDS")
+saveRDS(summary_table,
+        file = "../results/tableOne_b.RDS")
 summary_table
 
 ```
@@ -53,13 +54,15 @@ summary_table_f <-  data_f |>
                     mutate(APC_positive = APC_positive*100,    # in percent
                            DP_positive = DP_positive*100,      # in percent
                            PE_positive = PE_positive*100) |>   # in percent
-                    mutate(KIR_blocking = factor(KIR_blocking, levels = c(1, 0),
+                    mutate(KIR_blocking = factor(KIR_blocking,
+                                                 levels = c(1, 0),
                                                  labels = c("KIR-blocked",
                                                             "Not KIR-blocked"))) |>
               table1(x = formula(~ APC_positive + DP_positive + PE_positive | KIR_blocking),
                            data = _)
 
-saveRDS(summary_table_f, file = "../results/tableOne_f.RDS")
+saveRDS(summary_table_f,
+        file = "../results/tableOne_f.RDS")
 
 summary_table_f
 ```
@@ -89,8 +92,7 @@ protein_stack <- data_b |>
   labs( x = 'HLA allele',
       	y ='Peptides (%)',
         title = 'Distribution of SARS-Cov9 Genome Proteins',
-      	fill = 'Protein',
-      	caption = 'Data: S. K. Saini et al (2021)')
+      	fill = 'Protein')
 
 ggsave("../results/protein_stack.png", bg='white')
 protein_stack
@@ -139,8 +141,7 @@ ggplot(data_counts,
     	labs( x='Cohort',
         		y='Count (n)',
         		title = 'Summarized significant response count per sample',
-        	  fill = 'KIR Blocking',
-        		caption = 'Data: S. K. Saini et al (2021)')
+        	  fill = 'KIR Blocking')
 
 ggsave("../results/Boxplot_Nb_Responses.png", bg='white')
 ```
@@ -155,7 +156,8 @@ plot_data <- data_p  |> filter(paired == 1) |>
                            DP_positive = DP_positive*100,   
                            PE_positive = PE_positive*100) |>
           pivot_longer(
-                     cols = c('PE_positive', 'APC_positive'),
+                     cols = c('PE_positive',
+                              'APC_positive'),
                      names_to = 'Staining', 
                      values_to = 'Fraction') |>
         select(Fraction, Staining, sample_ID, cohort) |>
@@ -169,7 +171,8 @@ plot_data
 
 plot_data |>  
   ggplot(aes(x = factor(Staining, 
-                 levels= c('PE_positive', 'APC_positive')), 
+                 levels= c('PE_positive',
+                           'APC_positive')), 
              y = Fraction, 
              color = sample_ID)) +
         facet_wrap(~cohort, scales='free_y')+
@@ -178,7 +181,8 @@ plot_data |>
                      alpha = 0.7 )+
         geom_jitter(size= 3, 
                     shape= 20) +
-        scale_x_discrete(labels=c('pMHC staining', '+KIR Blocking'))+
+        scale_x_discrete(labels=c('pMHC staining',
+                                  '+KIR Blocking'))+
         theme_minimal(base_size = text_size)+
         theme(legend.position = 'right',
               plot.caption = element_text(size = 8),
@@ -189,8 +193,7 @@ plot_data |>
           		y='% multimer CD8+ T-cells',
           		title = 'Effect of KIR blocking on pMHC binding in CD8+ T-cells',
           		subtitle ='False positive responses of pMHC due to KIR binding',
-          	  color = 'Sample ID',
-          		caption = 'Data: S. K. Saini et. al 2021')
+          	  color = 'Sample ID')
 
 ggsave("../results/paired_sample_boxplot.png", bg='white')
 ```
@@ -205,7 +208,8 @@ unpaired <- data_p  |>
                              DP_positive = DP_positive*100,   
                              PE_positive = PE_positive*100) |>
             pivot_longer(
-                       cols = c('PE_positive', 'APC_positive'),
+                       cols = c('PE_positive',
+                                'APC_positive'),
                        names_to = 'Staining', 
                        values_to = 'Fraction') |>
           select(Fraction, Staining, sample_ID, cohort) |>
@@ -215,7 +219,8 @@ unpaired <- data_p  |>
 
 ggplot(unpaired, 
        aes(x = factor(Staining, 
-                 levels= c('PE_positive', 'APC_positive')), 
+                 levels= c('PE_positive',
+                           'APC_positive')), 
            y = Fraction,
            color = sample_ID)) +
       facet_wrap(~cohort,
@@ -238,8 +243,7 @@ ggplot(unpaired,
     	labs( x=element_blank(),
         		y='% multimer CD8+ T-cells',
         		title = 'Evaluating the impact of KIR blocking in the total cohorts ',
-        	  fill = 'KIR Blocking',
-        		caption = 'Data: S. K. Saini et. al 2021')
+        	  fill = 'KIR Blocking')
 
 ggsave("../results/all_samples_boxplot.png", bg='white')
 ```

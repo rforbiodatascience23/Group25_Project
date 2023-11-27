@@ -24,8 +24,11 @@ library(RColorBrewer)
 #| message: false
 
 data_path <-  '~/projects/Group25_Project/data'
-data_joined <- read_rds(file = file.path(data_path, '03_dat_aug_joined.RDS'))
-data_sig_pairing <- read_rds(file = file.path(data_path, '03_dat_aug_sig_pairing.RDS'))
+data_joined <- read_rds(file = file.path(data_path,
+                                         '03_dat_aug_joined.RDS'))
+data_sig_pairing <- read_rds(file = file.path(data_path,
+                                              
+                                              '03_dat_aug_sig_pairing.RDS'))
 ```
 
 ### Defining some settings once
