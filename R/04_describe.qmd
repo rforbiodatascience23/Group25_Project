@@ -66,8 +66,6 @@ summary_table_f
 ### Protein count distribution
 
 ```{r}
-#| message: false
-#| warning: false
 
 protein_stack <- data_b |>
   group_by(HLA, protein) |>
@@ -98,7 +96,6 @@ protein_stack
 
 ```{r}
 #| message: false
-
 # Prepare relevant data
 data_counts <-  data_p |> 
   count(cohort, sample_ID, KIR_blocking)
@@ -146,8 +143,6 @@ ggsave("../results/Boxplot_Nb_Responses.png", bg='white')
 ### FlowJo
 
 ```{r}
-#| message: false
-
 plot_data <- data_p  |> filter(paired == 1) |>
           mutate(APC_positive = APC_positive*100,     
                            DP_positive = DP_positive*100,   
@@ -158,10 +153,11 @@ plot_data <- data_p  |> filter(paired == 1) |>
                      values_to = 'Fraction') |>
         select(Fraction, Staining, sample_ID, cohort) |>
         unique()
+
+plot_data
 ```
 
 ```{r}
-#| message: false
 
 plot_data |>  
   ggplot(aes(x = factor(Staining, 

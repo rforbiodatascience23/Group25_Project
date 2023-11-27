@@ -17,6 +17,7 @@ rm(list = ls())
 ```{r}
 #| message: false
 library(tidyverse)
+library(RColorBrewer)
 ```
 
 #### Load Data
@@ -31,12 +32,26 @@ data_sig_pairing <- read_rds(file = '~/projects/Group25_Project/data/03_dat_aug_
 data_joined <- read_rds(file = '~/projects/Group25_Project/data/03_dat_aug_joined.RDS')
 ```
 
+### Add response factor
+
+(Not relevant now, but might need to group by response)
+
+```{r}
+plot_data <-  data_sig_pairing |>
+  mutate(response = case_when(
+    log_fold_change > 2 ~ 'High',
+    log_fold_change > 1.5 & log_fold_change <= 2 ~ 'Medium',
+    log_fold_change > 1 & log_fold_change <= 1.5 ~ 'Low',
+    TRUE ~ 'No Response'))
+```
+
 # Plotting paired samples
 
 ```{r}
 # Visualisation constants
 line_color ='#636363' 
 textsize = 10 
+color1 <- brewer.pal(9, "Paired")[c(6,2)]
 
 paired_data <- data_sig_pairing |>
   filter(paired == 1)
@@ -45,7 +60,6 @@ paired_data <- data_sig_pairing |>
 ### Log-fold-change vs epitope
 
 ```{r}
-#| message: false
 
 paired_data |>
   ggplot(aes(x = peptide, 
@@ -56,6 +70,7 @@ paired_data |>
              space='free_x') + 
   geom_point(aes(size = est_frequency), 
              alpha=0.7)+
+  scale_color_manual(values=c(color1)) +
   scale_size(range = c(1, 7)) +
   ylim(0,8) +
   geom_hline(yintercept = 2, 
@@ -64,29 +79,31 @@ paired_data |>
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45,
                                    vjust = 1,
-                                   hjust = 1),
-        panel.spacing.x=unit(0.1, "lines"),
-        panel.spacing.y=unit(0.7, "lines"),
+                                   hjust = 1,
+                                    margin = margin(b = 10)),
+        axis.text.y = element_text(margin = margin(l = 15)),
+        panel.margin.x=unit(0.1, "lines"),
+        panel.margin.y=unit(0.7, "lines"),
         legend.position = 'bottom',
-        legend.justification = c("right", "top"),
+        legend.justification = c("center", "top"),
         panel.grid.major.x = element_blank(),
         panel.background = element_rect(fill = NA, 
                                         color = "black"),
         panel.grid.minor.x = element_line(color = line_color, 
                                           linetype = 1, 
-                                          linewidth = 0.2)) +
+                                          size = 0.2)) +
   labs(title='The immune system of the AP cohort is highly impaired',
        x="pHLA mulitmer", 
        y="Log Fold Change", 
        color= 'KIR Blocking', 
        size='Est.freq.') 
+
+ggsave("../results/paired_logfold.png", bg='white')
 ```
 
 ### Count vs epitope
 
 ```{r}
-#| message: false
-
 paired_data |>
   ggplot(aes(x = peptide, 
              y = count, 
@@ -94,22 +111,32 @@ paired_data |>
   
   facet_grid(cohort ~HLA, scales = 'free_x', space='free_x')+ 
   geom_point(aes(size = est_frequency), alpha=0.7)+
+  scale_color_manual(values=c(color1)) +
   scale_size(range = c(2, 7)) +
   theme_minimal()+
   ylim(0, 7000)+
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+  theme(axis.text.x = element_text(angle = 45, 
+                                   vjust = 1, 
+                                   hjust = 1,
+                                   margin = margin(b = 10)),
+        axis.text.y = element_text(margin = margin(l = 15)),
         panel.margin.x=unit(0.1, "lines"),
         panel.margin.y=unit(0.7, "lines"),
         legend.position = 'bottom',
         legend.justification = c("right", "top"),
         panel.grid.major.x = element_blank(),
-        panel.background = element_rect(fill = NA, color = "black"),
-        panel.grid.minor.x = element_line(color = line_color, linetype = 1, size = 0.2)) +
-  labs(title='Paired Data - Count and epitope', 
+        panel.background = element_rect(fill = NA, 
+                                        color = "black"),
+        panel.grid.minor.x = element_line(color = line_color, 
+                                          linetype = 1, 
+                                          size = 0.2)) +
+  labs(title='Distribution of peptide responses across HLA-C allotypes', 
        x="pHLA multimer", 
-       y="Count", 
+       y="Count (n)", 
        color= 'KIR blocking', 
        size='Est.freq.') 
+
+ggsave("../results/paired_count.png", bg='white')
 ```
 
 # All significant samples
@@ -117,7 +144,7 @@ paired_data |>
 ### Log-Fold-Change vs epitope
 
 ```{r}
-#| message: false
+###| warning = false
   
 # Tibble for plotting
 log_data <- data_joined |> 
@@ -132,6 +159,7 @@ log_data |>
              space='free') + 
   geom_point(aes(size = est_frequency), 
                  alpha=0.7)+
+  scale_color_manual(values=c(color1)) +
   scale_size(range = c(0.5, 6)) +
   geom_hline(yintercept = 2, 
              color= line_color,
@@ -141,25 +169,25 @@ log_data |>
         panel.margin.x=unit(0.1, "lines"),
         panel.margin.y=unit(0.7, "lines"),
         legend.position = 'bottom',
-        legend.justification = c("right", "top"),
+        legend.justification = c("center"),
         panel.grid.major.x = element_blank(),
         panel.background = element_rect(fill = NA, 
                                         color = "black"),
         panel.grid.minor.x = element_line(color = line_color, 
                                           linetype = 1, 
                                           size = 0.2)) + 
-  labs(title='Significant Data: LogFold', 
+  labs(title='Peptide specific downregulation of responses as a result of KIR blocking', 
        x="Unique pHLA", 
        y="Log Fold Change", 
        color= 'KIR Blocking', 
        size='Est.freq.') 
+
+ggsave("../results/all_logfold.png", bg='white')
 ```
 
 ### Count vs epitope
 
 ```{r}
-#| message: false
-
 # Tibble for plotting
 signi_data <-  data_joined |> 
   filter(log_fold_change > 0 & p < 0.001)
@@ -170,6 +198,7 @@ signi_data |>
              color = KIR_blocking))+
   facet_grid(cohort ~HLA, scales = 'free', space='free_x') + 
   geom_point(aes(size = est_frequency), alpha=0.7) +
+  scale_color_manual(values=c(color1)) +
   scale_size(range = c(0.5, 6)) +
   theme_minimal() +
   theme(axis.text.x = element_blank(),
@@ -185,4 +214,6 @@ signi_data |>
        y="Count", 
        color= 'KIR Blocking', 
        size='Est.freq.') 
+
+ggsave("../results/all_count.png", bg='white')
 ```
