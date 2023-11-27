@@ -12,6 +12,7 @@ Clean Work Environment and Load Packages
 
 ```{r}
 #| message: false
+
 rm(list = ls())
 library(tidyverse)
 library(RColorBrewer)
@@ -21,6 +22,7 @@ library(RColorBrewer)
 
 ```{r}
 #| message: false
+
 data_path <-  '~/projects/Group25_Project/data'
 data_joined <- read_rds(file = file.path(data_path, '03_dat_aug_joined.RDS'))
 data_sig_pairing <- read_rds(file = file.path(data_path, '03_dat_aug_sig_pairing.RDS'))
@@ -29,6 +31,8 @@ data_sig_pairing <- read_rds(file = file.path(data_path, '03_dat_aug_sig_pairing
 ### Defining some settings once
 
 ```{r}
+#| message: false
+
 # alpha, size and colors for volcano plots
 a <- 0.25                                # alpha
 s <- 0.005                               # size
@@ -46,11 +50,10 @@ data_joined <- data_joined |>
              levels = c("Positive", "Negative", "Insignificant")))
 ```
 
-I am unsure which volcano plots we need but here is at least some scaffolding
-
 ### Volcano plots, grouped by cohort and HLA
 
 ```{r}
+#| message: false
 
 data_joined |>
   group_by(HLA, cohort) |>
@@ -98,6 +101,8 @@ ggsave("../results/Volcano_cohorts_HLA.png",
 ### Volcano plots all cohorts
 
 ```{r}
+#| message: false
+
 data_joined |>
   group_by(HLA, cohort) |>
   ggplot(aes(x = log_fold_change,
@@ -146,6 +151,8 @@ ggsave("../results/Volcano_cohorts.png",
 ### Volcano plot for all data
 
 ```{r}
+#| message: false
+
 data_joined |>
   ggplot(aes(x = log_fold_change,
              y = - log10(p),

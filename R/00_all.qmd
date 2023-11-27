@@ -12,6 +12,7 @@ Clearing the environment, loading the libraries, setting some paths, and checkin
 
 ```{r}
 #| message: false
+#| warning: false
 
 rm(list = ls())
 
@@ -35,11 +36,17 @@ The files in data and the files in results should be deleted before starting
 #| warning: false
 
 # emptying results folder, including subdirectories
-file.remove(list.files(results_path, full.names = TRUE, recursive = TRUE))
-unlink(results_path, recursive = TRUE, force = TRUE)
+invisible(file.remove(list.files(results_path,
+                                 full.names = TRUE,
+                                 recursive = TRUE)))
+unlink(results_path,
+       recursive = TRUE,
+       force = TRUE)
 
 # emptying results folder, keeping subdirectories
-file.remove(list.files(data_path, full.names = TRUE, recursive = FALSE))
+invisible(file.remove(list.files(data_path,
+                                 full.names = TRUE,
+                                 recursive = FALSE)))
 
 if (!dir.exists(results_path)) {
 dir.create(results_path)

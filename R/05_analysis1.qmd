@@ -37,6 +37,8 @@ data_joined <- read_rds(file = '~/projects/Group25_Project/data/03_dat_aug_joine
 (Not relevant now, but might need to group by response)
 
 ```{r}
+#| message: false
+
 plot_data <-  data_sig_pairing |>
   mutate(response = case_when(
     log_fold_change > 2 ~ 'High',
@@ -48,6 +50,8 @@ plot_data <-  data_sig_pairing |>
 # Plotting paired samples
 
 ```{r}
+#| message: false
+
 # Visualisation constants
 line_color ='#636363' 
 textsize = 10 
@@ -60,6 +64,7 @@ paired_data <- data_sig_pairing |>
 ### Log-fold-change vs epitope
 
 ```{r}
+#| message: false
 
 paired_data |>
   ggplot(aes(x = peptide, 
@@ -104,6 +109,8 @@ ggsave("../results/paired_logfold.png", bg='white')
 ### Count vs epitope
 
 ```{r}
+#| message: false
+
 paired_data |>
   ggplot(aes(x = peptide, 
              y = count, 
@@ -144,8 +151,8 @@ ggsave("../results/paired_count.png", bg='white')
 ### Log-Fold-Change vs epitope
 
 ```{r}
-###| warning = false
-  
+#| message: false
+
 # Tibble for plotting
 log_data <- data_joined |> 
   filter(log_fold_change > 0 & p < 0.001)
@@ -188,6 +195,8 @@ ggsave("../results/all_logfold.png", bg='white')
 ### Count vs epitope
 
 ```{r}
+#| message: false
+
 # Tibble for plotting
 signi_data <-  data_joined |> 
   filter(log_fold_change > 0 & p < 0.001)
