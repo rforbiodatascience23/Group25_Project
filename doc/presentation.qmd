@@ -1,6 +1,6 @@
 ---
-title: "Group 25 Presentation"
-authors: "Darya Trubach, Emilie Sofie Engdal, Manon Kirstine Chevalier"
+title: "The effect of KIR-blocking on HLA-C in SarsCov2 immune responses"
+authors: "Emilie Sofie Engdal, Manon Kirstine Chevalier"
 format:
   revealjs:
     theme: moon
@@ -8,25 +8,34 @@ format:
     scrollable: true
     embed-resources: true
     logo: DTU_logo_Corp_Red_RGB.png
-    footer: "R4BDS"
+    footer: "R4BDS - Group 25"
 editor: visual
 ---
 
-# Introduction
+## Introduction
+
+### HLA's
+
+### HLA-C
+
+### KIR
 
 ::: notes
-Themes to use: dark, moon, night, simple, solarized
+The major histocompatibility complex (MHC), or HLA in humans, are known well-known for their crucial role in inducing effective immune responses against antigens. While both HLA-A and -B have been widely studied for their interaction with T-cells and T-cell receptors (TCRs), much less is known about HLA-C - possibly due to the overall lower expression of HLA-C molecules.
 
-https://quarto.org/docs/presentations/revealjs/#overview
+However, newly published research has shown that HLA-C may pose a larger role in the immune response than first expected; an unusually high number of HLA-C recognition in CD8+ T cells are now challenging the prior assumptions of TCR-dependent responses.  The motivation for this study was to be able to distinguish between TCR-dependent and independent responses and hereby characterize TCR-specific and unspecific bindings of HLA-C molecules. 
+
+Overall the study found that another receptor, the killer immunoglobin receptors (KIR), seemed to block the binding of TCR to pHLA-C. Unlike the HLA-A and -B, the HLA-C alleles express proteins that are recognised by KIRs. These receptors are present (together with the TCR) on NK-cells and can be either inhibiting or activating.
 :::
 
-## Biological background
+```{r}
+library(tidyverse)
+results_path <- "~/projects/Group25_Project/results"
+table_one_barracoda <- read_rds(file = file.path(results_path, "tableOne_b.RDS"))
+table_one_flowjo <- read_rds(file = file.path(results_path, "tableOne_f.RDS"))
+```
 
-::: notes
-Speaker notes go here.
-:::
-
-# Methods
+## Materials and Methods - Project Flow Chart
 
 ```{r}
 library(tidyverse)
@@ -37,82 +46,89 @@ table_one_flowjo <- read_rds(file = file.path(results_path, "tableOne_f.RDS"))
 
 ```
 
-## Overview - Flow Chart
-
 ```{r, echo=FALSE, out.width="50%", fig.cap="A nice image."}
-knitr::include_graphics("Flowchart.png")
+knitr::include_graphics("flowfig.png")
 ```
 
-## Barracoda data - Table 1a
-
-```{r}
-table_one_barracoda
-```
-
-::: notes
-Speaker notes go here.
-:::
-
-## Flowjo data - Table 1b
-
-```{r}
-
-table_one_flowjo
-```
-
-::: notes
-Speaker notes go here.
-:::
-
-## Computations
-
-::: notes
-Speaker notes go here.
-:::
-
-# Results
-
-```{r}
-
-
-```
-
-::: notes
-Speaker notes go here.
-:::
-
-## Visualisation #1
+## Materials and Methods - The 3 cohorts
 
 ```{r, echo=FALSE, out.width="50%", fig.cap="A nice image."}
 knitr::include_graphics(file.path(results_path, "Boxplot_Nb_Responses.png"))
 ```
 
 ::: notes
-Speaker notes go here.
+Describe the 3 cohorts
 :::
 
-## Visualisation #2
+## Materials and Methods - Barracoda data
+
+```{r}
+table_one_barracoda
+```
+
+```{r, echo=FALSE, out.width="50%", fig.cap="A nice image."}
+knitr::include_graphics(file.path(results_path, "protein_stack.png"))
+```
+
+::: notes
+:::
+
+## Materials and Methods - Flowjo data
+
+```{r}
+table_one_flowjo
+```
+
+::: notes
+:::
+
+## Results - Filtering only significant responses
+
+```{r, echo=FALSE, out.width="50%", fig.cap="A nice image."}
+knitr::include_graphics(file.path(results_path, "Volcano_all.png"))
+```
+
+::: notes
+:::
+
+## Results - Paired boxblot
+
+```{r, echo=FALSE, out.width="50%", fig.cap="A nice image."}
+knitr::include_graphics(file.path(results_path, "paired_sample_boxplot.png"))
+```
+
+::: notes
+:::
+
+## Results - Bubble plot - significant
+
+$$
+Est. Freq = \left( \frac{count_{barcode}}{count_{total}} \cdot 100 \% \right) \cdot PE
+$$
+
+```{r, echo=FALSE, out.width="50%", fig.cap="A nice image."}
+knitr::include_graphics(file.path(results_path, "all_count.png"))
+```
 
 ::: notes
 Speaker notes go here.
 :::
 
-## Visualisation #3
+## Results - Bubble plot - significant
+
+$$
+Est. Freq = \left( \frac{count_{barcode}}{count_{total}} \cdot 100 \% \right) \cdot PE
+$$
+
+```{r, echo=FALSE, out.width="50%", fig.cap="A nice image."}
+knitr::include_graphics(file.path(results_path, "all_logfold.png"))
+```
 
 ::: notes
 Speaker notes go here.
 :::
 
-# Discussion
-
-Insert some conclusions here
+## Discussion
 
 ::: notes
-Speaker notes go here.
-:::
-
-# Questions?
-
-::: notes
-Speaker notes go here.
 :::
